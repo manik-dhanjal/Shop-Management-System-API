@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CoreRepository } from '@core/core.repository';
 import { Model } from 'mongoose';
-import { Product, ProductDocument } from '../schema/product.schema';
+import { Inventory, InventoryDocument } from '../schema/inventory.schema';
 
 @Injectable()
-export class ProductRepository extends CoreRepository<ProductDocument> {
+export class InventoryRepository extends CoreRepository<InventoryDocument> {
   constructor(
-    @InjectModel(Product.name)
-    readonly model: Model<ProductDocument>,
+    @InjectModel(Inventory.name)
+    readonly model: Model<InventoryDocument>,
   ) {
     super(model);
   }

@@ -16,6 +16,18 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@mocks/*": ["test/__mocks__/*"],
+      "@test/*": ["test/*"],
+      "@core/*": ["src/shared/core/*"],
+      "@config/*": ["src/shared/config/*"],
+      "@guards/*": ["src/shared/guards/*"],
+      "@middlewares/*": ["src/shared/middlewares/*"],
+      "@modules/*": ["src/shared/modules/*"],
+      "@shared/*": ["src/shared/*"],
+      "@api/*": ["src/api/*"],
+      "@root/*": ["src/*"]
+    }
   }
 }
