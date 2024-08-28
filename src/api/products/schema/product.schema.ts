@@ -1,17 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Shop } from 'src/api/shops/schema/shop.schema';
+import { ProductProperty } from './product-property.schema';
 
 export type ProductDocument = HydratedDocument<Product>;
-
-@Schema({ _id: false })
-export class ProductProperty {
-  @Prop({ type: String, required: true })
-  name: string;
-
-  @Prop({ type: String, required: true })
-  value: string;
-}
 
 @Schema()
 export class Product {
@@ -53,6 +45,24 @@ export class Product {
     default: [],
   })
   properties: ProductProperty[];
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  igstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  cgstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  sgstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
