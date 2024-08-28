@@ -17,6 +17,7 @@ export const smsDatabaseConfig = registerAs('sms-database', () => {
     process.env.MONGO_LOGGER_LEVEL,
   ).value;
 
+  console.log(smsDbUrl);
   return {
     uri: smsDbUrl,
     useNewUrlParser: true,
