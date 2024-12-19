@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Shop } from 'src/api/shops/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
+import { Image } from '@shared/schema/image.schema';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -16,8 +17,8 @@ export class Product {
   @Prop({ type: String, required: true })
   sku: string;
 
-  @Prop({ type: [String], default: [], required: false })
-  images: string[];
+  @Prop({ type: [Image], default: [], required: false })
+  images: Image[];
 
   @Prop({ type: String, required: true })
   hsn: string;

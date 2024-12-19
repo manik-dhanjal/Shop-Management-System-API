@@ -3,6 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { Product } from 'src/api/products/schema/product.schema';
 import { Shop } from 'src/api/shops/schema/shop.schema';
 import { Stock } from './stock.schema';
+import { Supplier } from '@api/suppliers/schema/supplier.schema';
 
 export type InventoryDocument = HydratedDocument<Inventory>;
 
@@ -28,10 +29,11 @@ export class Inventory {
   currency: string;
 
   @Prop({
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Supplier.name,
     required: true,
   })
-  supplier: string;
+  supplier: Supplier;
 
   @Prop({
     type: Stock,
