@@ -4,13 +4,11 @@ import {
   ArrayMinSize,
   IsArray,
   IsNumber,
-  IsObject,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { isValidObjectId } from 'mongoose';
 import { ProductPropertyDTO } from './product-property.dto';
 
 export default class CreateProductDTO {
