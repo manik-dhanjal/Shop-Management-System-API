@@ -16,8 +16,6 @@ export const smsDatabaseConfig = registerAs('sms-database', () => {
   const mongoLoggerLevel = mongoLoggerLevelValidation.validate(
     process.env.MONGO_LOGGER_LEVEL,
   ).value;
-
-  console.log(smsDbUrl);
   return {
     uri: smsDbUrl,
     useNewUrlParser: true,

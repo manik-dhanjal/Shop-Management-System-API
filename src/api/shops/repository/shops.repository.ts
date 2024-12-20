@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Shop, ShopDocument } from '../schema/shop.schema';
 
 @Injectable()
-export class ShopsRepository extends CoreRepository<ShopDocument> {
+export class ShopRepository extends CoreRepository<ShopDocument> {
   constructor(
     @InjectModel(Shop.name)
     readonly model: Model<ShopDocument>,

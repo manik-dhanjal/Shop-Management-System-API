@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { LeanDocument } from '@shared/types/lean-document.interface';
 import { ProductDocument } from './schema/product.schema';
-import CreateProductDTO from './dtos/create-product.dto';
+import CreateProductDto from './dtos/create-product.dto';
 import { ProductService } from './product.service';
 
 @Controller('api/shop/:shop/product')
@@ -17,7 +17,7 @@ export class ProductsController {
 
   @Post()
   async addProduct(
-    @Body() product: CreateProductDTO,
+    @Body() product: CreateProductDto,
   ): Promise<LeanDocument<ProductDocument>> {
     return this.productService.createProduct(product);
   }

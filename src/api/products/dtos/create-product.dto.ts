@@ -3,15 +3,16 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsMongoId,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   MaxLength,
-  MinLength,
 } from 'class-validator';
-import { ProductPropertyDTO } from './product-property.dto';
+import { ProductPropertyDto } from './product-property.dto';
 
-export default class CreateProductDTO {
+export default class CreateProductDto {
   @IsString()
   @MaxLength(100)
   name: string;
@@ -38,9 +39,8 @@ export default class CreateProductDTO {
   @MaxLength(100)
   brand: string;
 
-  @IsString()
-  @MaxLength(20)
-  @MinLength(1)
+  @IsMongoId()
+  @IsNotEmpty()
   shop: string;
 
   @IsArray()
@@ -50,10 +50,10 @@ export default class CreateProductDTO {
   keywords: string[];
 
   @IsArray()
-  @Type(() => ProductPropertyDTO)
+  @Type(() => ProductPropertyDto)
   @ArrayMaxSize(100)
   @ArrayMinSize(0)
-  properties: ProductPropertyDTO[];
+  properties: ProductPropertyDto[];
 
   @IsNumber()
   igstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%

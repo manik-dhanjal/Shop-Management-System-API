@@ -1,6 +1,6 @@
 import { IsString, MaxLength, MinLength } from 'class-validator';
 
-export class ProductPropertyDTO {
+export class ProductPropertyDto {
   @IsString()
   @MaxLength(100)
   @MinLength(1)
