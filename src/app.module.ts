@@ -8,13 +8,14 @@ import {
   smsDatabaseConfig,
 } from './shared/config/database.config';
 import { ApiModule } from './api/api.module';
+import { cloudinaryConfig } from '@config/cloudinary.config';
 
 @Module({
   imports: [
     ApiModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [smsDatabaseConfig],
+      load: [smsDatabaseConfig, cloudinaryConfig],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

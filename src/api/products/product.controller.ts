@@ -1,24 +1,57 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { LeanDocument } from '@shared/types/lean-document.interface';
 import { ProductDocument } from './schema/product.schema';
 import CreateProductDto from './dtos/create-product.dto';
 import { ProductService } from './product.service';
+import { UpdateProductDto } from './dtos/update-product.dto';
+import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 
-@Controller('api/shop/:shop/product')
+@Controller('shop/:shopId/product')
 export class ProductsController {
   constructor(private readonly productService: ProductService) {}
 
   @Get(':id')
-  async getProducts(
+  async getProduct(
     @Param('id') id: string,
   ): Promise<LeanDocument<ProductDocument>> {
     return this.productService.getProductById(id);
   }
 
+  @Post('paginated')
+  async getPaginatedProducts(
+    @Param('shopId') shopId: string,
+    @Body() query: PaginationQueryDto<CreateProductDto>,
+  ): Promise<PaginatedResponseDto<LeanDocument<ProductDocument>>> {
+    return this.productService.getPaginatedProducts(shopId, query);
+  }
+
   @Post()
   async addProduct(
+    @Param('shopId') shopId: string,
     @Body() product: CreateProductDto,
   ): Promise<LeanDocument<ProductDocument>> {
-    return this.productService.createProduct(product);
+    return this.productService.createProduct(shopId, product);
+  }
+
+  @Patch(':productId')
+  async updateProduct(
+    @Param('productId') productId: string,
+    @Body() product: UpdateProductDto,
+  ): Promise<LeanDocument<ProductDocument>> {
+    return this.productService.updateProductById(productId, product);
+  }
+
+  @Delete(':productId')
+  async deleteProduct(@Param('productId') productId: string): Promise<void> {
+    return this.productService.deleteProductById(productId);
   }
 }

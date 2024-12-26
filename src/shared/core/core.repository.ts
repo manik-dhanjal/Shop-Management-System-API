@@ -123,7 +123,7 @@ export class CoreRepository<T> {
     limit = 10,
     population: string | string[] = [],
   ): Promise<{
-    records: LeanDocument<T>[];
+    docs: LeanDocument<T>[];
     pagination: PaginationMetadata;
   }> {
     const query = this.getModelInstance().find(filter);
@@ -146,7 +146,7 @@ export class CoreRepository<T> {
     const prevPage = currentPage > 1 ? currentPage - 1 : null;
 
     return {
-      records: records,
+      docs: records,
       pagination: {
         totalRecords: totalRecords,
         currentPage: currentPage,

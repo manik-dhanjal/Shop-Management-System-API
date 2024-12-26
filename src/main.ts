@@ -13,6 +13,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('shops')
     .build();
+  app.enableCors();
+  app.setGlobalPrefix('api');
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger-docs', app, documentFactory);
   app.useGlobalPipes(new ValidationPipe());

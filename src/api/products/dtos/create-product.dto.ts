@@ -4,8 +4,8 @@ import {
   ArrayMinSize,
   IsArray,
   IsMongoId,
-  IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   MaxLength,
@@ -26,9 +26,10 @@ export default class CreateProductDto {
   @MaxLength(50)
   sku: string;
 
-  @IsArray()
   @ArrayMaxSize(50)
-  @Type(() => Image)
+  @ArrayMinSize(0)
+  @IsArray()
+  @IsMongoId({ each: true })
   images: [];
 
   @IsString()
@@ -39,17 +40,14 @@ export default class CreateProductDto {
   @MaxLength(100)
   brand: string;
 
-  @IsMongoId()
-  @IsNotEmpty()
-  shop: string;
-
   @IsArray()
-  @IsString()
+  @IsString({ each: true })
   @ArrayMaxSize(100)
   @ArrayMinSize(0)
   keywords: string[];
 
   @IsArray()
+  @IsObject({ each: true })
   @Type(() => ProductPropertyDto)
   @ArrayMaxSize(100)
   @ArrayMinSize(0)

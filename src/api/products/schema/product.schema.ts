@@ -2,11 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Shop } from 'src/api/shops/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
-import { Image } from '@shared/schema/image.schema';
+import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
 
 export type ProductDocument = HydratedDocument<Product>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Product {
   @Prop({ type: String, required: true })
   name: string;
@@ -17,8 +17,13 @@ export class Product {
   @Prop({ type: String, required: true })
   sku: string;
 
-  @Prop({ type: [Image], default: [], required: false })
-  images: Image[];
+  @Prop({
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: MediaMetadata.name,
+    default: [],
+    required: false,
+  })
+  images: MediaMetadata[];
 
   @Prop({ type: String, required: true })
   hsn: string;
