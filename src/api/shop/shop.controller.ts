@@ -29,7 +29,7 @@ export class ShopController {
     return this.service.createShop(newShop);
   }
 
-  @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN)
   @Patch(':shopId')
   async updateShop(
     @Body() updatedShop: UpdateShopDto,
