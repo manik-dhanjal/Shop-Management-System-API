@@ -161,7 +161,7 @@ export class UserService {
     const tokenPayload: UserTokenPayload = {
       tokenType: UserTokenType.ACCESS_TOKEN,
       userId: user._id.toString(),
-      ..._pick(user, ['email', 'role', 'firstName', 'lastName', 'shop']),
+      ..._pick(user, ['email', 'roles', 'firstName', 'lastName', 'shop']),
     };
     const accessToken = jwt.sign(
       { ...tokenPayload },
@@ -182,7 +182,7 @@ export class UserService {
     const tokenPayload: UserTokenPayload = {
       tokenType: UserTokenType.REFRESH_TOKEN,
       userId: user._id.toString(),
-      ..._pick(user, ['email', 'role', 'firstName', 'lastName', 'shop']),
+      ..._pick(user, ['email', 'roles', 'firstName', 'lastName', 'shop']),
     };
 
     const refreshToken = jwt.sign(tokenPayload, this.userConfig.jwtSecret, {
