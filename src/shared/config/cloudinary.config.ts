@@ -7,7 +7,7 @@ export interface CloundinaryConfig {
   apiSecret: string;
 }
 
-export const CLOUDINARY_CONFIG_NAME = 'cloudinary';
+export const CLOUDINARY_CONFIG_NAME = 'cloudinary-config';
 
 export const cloudinaryConfig = registerAs(
   CLOUDINARY_CONFIG_NAME,

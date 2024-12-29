@@ -9,13 +9,17 @@ import {
 } from './shared/config/database.config';
 import { ApiModule } from './api/api.module';
 import { cloudinaryConfig } from '@config/cloudinary.config';
+import { userConfig } from '@config/user.config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '@shared/gaurd/auth.gaurd';
+import { UserModule } from '@api/user/user.module';
 
 @Module({
   imports: [
     ApiModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [smsDatabaseConfig, cloudinaryConfig],
+      load: [smsDatabaseConfig, cloudinaryConfig, userConfig],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,8 +27,15 @@ import { cloudinaryConfig } from '@config/cloudinary.config';
         configService.get<DatabaseConfig>('sms-database'),
       inject: [ConfigService],
     }),
+    UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
