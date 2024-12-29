@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ResourceType } from '../enum/resource-type.enum';
-import { Shop } from '@api/shops/schema/shop.schema';
+import { Shop } from '@api/shop/schema/shop.schema';
 
 export type MediaMetadataDocument = HydratedDocument<MediaMetadata>;
 

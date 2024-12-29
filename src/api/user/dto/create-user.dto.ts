@@ -1,15 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '../enum/user-role.enum';
 import {
   IsArray,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
   Length,
   Matches,
 } from 'class-validator';
+import { ShopMeta } from '../schema/shop-meta.schema';
+import { ShopMetaDto } from './shop-meta.dto';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'First name of the user' })
@@ -46,9 +48,12 @@ export class CreateUserDto {
   @Length(8, 20)
   password: string;
 
-  @ApiProperty({ enum: UserRole, description: 'Role assigned to the user' })
-  @IsNotEmpty()
-  @IsEnum(UserRole, { message: 'Invalid role', each: true })
+  @ApiPropertyOptional({
+    description: 'collection of shopIDs and user roles for them',
+  })
+  @IsOptional()
   @IsArray()
-  roles: UserRole[];
+  @IsObject({ each: true })
+  @Type(() => ShopMeta)
+  shopsMeta?: ShopMetaDto[];
 }

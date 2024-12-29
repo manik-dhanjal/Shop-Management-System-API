@@ -1,5 +1,5 @@
-import { UserRole } from '../enum/user-role.enum';
 import { UserTokenType } from '../enum/user-token-type.enum';
+import { ShopMeta } from '../schema/shop-meta.schema';
 
 export interface UserTokenPayload {
   tokenType: UserTokenType;
@@ -7,5 +7,5 @@ export interface UserTokenPayload {
   firstName: string;
   lastName: string;
   email: string;
-  roles: UserRole[];
+  shopsMeta: ShopMeta[];
 }

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Shop } from 'src/api/shops/schema/shop.schema';
+import { Shop } from '@api/shop/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
 import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
 

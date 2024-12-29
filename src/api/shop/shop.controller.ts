@@ -4,6 +4,8 @@ import { ShopDocument } from './schema/shop.schema';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { ShopService } from './shop.service';
 import { UpdateShopDto } from './dto/update-shop.dto';
+import { Roles } from '@shared/decorator/roles.decorator';
+import { UserRole } from '@api/user/enum/user-role.enum';
 
 @Controller('api/shop')
 export class ShopController {
@@ -14,6 +16,7 @@ export class ShopController {
     return this.service.getShops();
   }
 
+  @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
   @Get(':id')
   async getShop(@Param('id') id: string): Promise<LeanDocument<ShopDocument>> {
     return this.service.getShopById(id);
@@ -26,7 +29,8 @@ export class ShopController {
     return this.service.createShop(newShop);
   }
 
-  @Patch()
+  @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
+  @Patch(':shopId')
   async updateShop(
     @Body() updatedShop: UpdateShopDto,
   ): Promise<LeanDocument<ShopDocument>> {

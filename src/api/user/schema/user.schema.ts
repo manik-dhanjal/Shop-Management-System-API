@@ -1,8 +1,7 @@
 import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { UserRole } from '../enum/user-role.enum';
-import { Shop } from '@api/shops/schema/shop.schema';
+import { ShopMeta } from './shop-meta.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -48,21 +47,14 @@ export class User {
   password: string;
 
   @Prop({
-    type: [String],
-    enum: UserRole,
-    required: true,
+    type: [ShopMeta],
+    required: false,
+    default: [],
   })
-  roles: UserRole[];
+  shopsMeta: ShopMeta[];
 
   @Prop({ default: true, type: Boolean, required: false })
   isActive: boolean;
-
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Shop.name,
-    required: true,
-  })
-  shop: Shop;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

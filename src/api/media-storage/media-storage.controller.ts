@@ -14,7 +14,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaMetadataDocument } from './schema/media-metadata.schema';
 import { LeanDocument } from '@shared/types/lean-document.interface';
 import { CreateMediaMetadata } from './dto/create-media-metadata.dto';
-
+import { UserRole } from '@api/user/enum/user-role.enum';
+import { Roles } from '@shared/decorator/roles.decorator';
+@Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
 @Controller('/shop/:shopId/media-storage')
 export class MediaStorageController {
   constructor(private readonly mediaStorageService: MediaStorageService) {}

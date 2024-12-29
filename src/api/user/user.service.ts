@@ -30,11 +30,8 @@ export class UserService {
     this.userConfig = configService.get<UserConfig>(USER_CONFIG_NAME);
   }
 
-  async createUser(
-    shopId: string,
-    user: CreateUserDto,
-  ): Promise<UserTokensDto> {
-    const existingUser = await this.getUserByEmail(shopId, user.email);
+  async createUser(user: CreateUserDto): Promise<UserTokensDto> {
+    const existingUser = await this.getUserByEmail(user.email);
     if (existingUser) {
       throw new ConflictException(
         `User with email ${user.email} already exists.`,
@@ -47,7 +44,6 @@ export class UserService {
     const newUser = await this.repository.create({
       ...user,
       password: hashedPassword,
-      shop: shopId,
     });
     return {
       access: this.generateAccessToken(newUser),
@@ -56,12 +52,10 @@ export class UserService {
   }
 
   async validateUser(
-    shopId: string,
     userCreds: Pick<CreateUserDto, 'email' | 'password'>,
   ): Promise<UserTokensDto> {
     const user = await this.repository.findOne({
       email: userCreds.email,
-      shop: shopId,
       isActive: true,
     });
     const isPasswordValid = await bcrypt.compare(
@@ -90,7 +84,6 @@ export class UserService {
 
     if (
       !tokenPayload.userId ||
-      !tokenPayload.shop ||
       tokenPayload.tokenType !== UserTokenType.REFRESH_TOKEN
     ) {
       throw new UnauthorizedException(
@@ -98,7 +91,7 @@ export class UserService {
       );
     }
 
-    const user = await this.getUserById(tokenPayload.shop, tokenPayload.userId);
+    const user = await this.getUserById(tokenPayload.userId);
     if (!user) {
       new UnauthorizedException(
         'refresh token is not valid for requested user.',
@@ -108,12 +101,10 @@ export class UserService {
   }
 
   async getUserById(
-    shopId: string,
     userId: string,
   ): Promise<LeanDocument<UserDocument> | null> {
     try {
       return await this.repository.findOne({
-        shop: shopId,
         _id: userId,
         isActive: true,
       });
@@ -126,12 +117,10 @@ export class UserService {
   }
 
   async getUserByEmail(
-    shopId: string,
     email: string,
   ): Promise<LeanDocument<UserDocument> | null> {
     try {
       return await this.repository.findOne({
-        shop: shopId,
         email,
         isActive: true,
       });
@@ -150,18 +139,16 @@ export class UserService {
     if (!isObjectIdOrHexString(userId)) {
       throw new UnauthorizedException('Invalid userId');
     }
-    console.log(userToUpdate);
-    return this.repository.updateOne(
-      new mongoose.Types.ObjectId(userId),
-      userToUpdate,
-    );
+    const mongoUserId = new mongoose.Types.ObjectId(userId);
+    await this.repository.findOne(mongoUserId);
+    return this.repository.updateOne(mongoUserId, userToUpdate);
   }
 
   private generateAccessToken(user: LeanDocument<UserDocument>): UserTokenDto {
     const tokenPayload: UserTokenPayload = {
       tokenType: UserTokenType.ACCESS_TOKEN,
       userId: user._id.toString(),
-      ..._pick(user, ['email', 'roles', 'firstName', 'lastName', 'shop']),
+      ..._pick(user, ['email', 'firstName', 'lastName', 'shopsMeta']),
     };
     const accessToken = jwt.sign(
       { ...tokenPayload },
@@ -182,7 +169,7 @@ export class UserService {
     const tokenPayload: UserTokenPayload = {
       tokenType: UserTokenType.REFRESH_TOKEN,
       userId: user._id.toString(),
-      ..._pick(user, ['email', 'roles', 'firstName', 'lastName', 'shop']),
+      ..._pick(user, ['email', 'firstName', 'lastName', 'shopsMeta']),
     };
 
     const refreshToken = jwt.sign(tokenPayload, this.userConfig.jwtSecret, {

@@ -16,26 +16,22 @@ import { UserDocument } from './schema/user.schema';
 import { NoAuth } from '@shared/decorator/no-auth.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('shop/:shopId/user')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @NoAuth()
   @Post('register')
-  async register(
-    @Body() newUser: CreateUserDto,
-    @Param('shopId') shopId: string,
-  ): Promise<UserTokensDto> {
-    return this.userService.createUser(shopId, newUser);
+  async register(@Body() newUser: CreateUserDto): Promise<UserTokensDto> {
+    return this.userService.createUser(newUser);
   }
 
   @NoAuth()
   @Post('login')
   async login(
     @Body() userCreds: Pick<CreateUserDto, 'email' | 'password'>,
-    @Param('shopId') shopId: string,
   ): Promise<UserTokensDto> {
-    return this.userService.validateUser(shopId, userCreds);
+    return this.userService.validateUser(userCreds);
   }
 
   @Get('profile')

@@ -42,15 +42,11 @@ export class AuthGuard implements CanActivate {
 
       if (
         !tokenPayload?.userId ||
-        !tokenPayload?.shop ||
         tokenPayload.tokenType !== UserTokenType.ACCESS_TOKEN
       ) {
         throw new Error('Bearer token is not a valid access token');
       }
-      const user = await this.userService.getUserById(
-        tokenPayload?.shop,
-        tokenPayload.userId,
-      );
+      const user = await this.userService.getUserById(tokenPayload.userId);
       if (!user) {
         new Error('User doesnt exist for request token');
       }

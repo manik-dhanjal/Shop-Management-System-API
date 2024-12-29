@@ -14,7 +14,10 @@ import { ProductService } from './product.service';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
+import { Roles } from '@shared/decorator/roles.decorator';
+import { UserRole } from '@api/user/enum/user-role.enum';
 
+@Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
 @Controller('shop/:shopId/product')
 export class ProductsController {
   constructor(private readonly productService: ProductService) {}

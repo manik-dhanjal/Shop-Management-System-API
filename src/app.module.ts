@@ -13,6 +13,7 @@ import { userConfig } from '@config/user.config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '@shared/gaurd/auth.gaurd';
 import { UserModule } from '@api/user/user.module';
+import { RolesGuard } from '@shared/gaurd/roles.gaurd';
 
 @Module({
   imports: [
@@ -31,11 +32,15 @@ import { UserModule } from '@api/user/user.module';
   ],
   controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+    AppService,
   ],
 })
 export class AppModule {}

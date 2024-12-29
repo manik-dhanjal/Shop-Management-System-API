@@ -1,19 +1,49 @@
 import { UserRole } from '@api/user/enum/user-role.enum';
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { ShopMeta } from '@api/user/schema/shop-meta.schema';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  NotFoundException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '@shared/decorator/roles.decorator';
+import { User } from '@api/user/schema/user.schema';
+import { Request } from 'express';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<UserRole[]>('roles', context.getHandler());
-    if (!roles) {
-      return true; // No roles means endpoint is public
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+    console.log(requiredRoles);
+    if (!requiredRoles) {
+      return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user; // Ensure JWT or session middleware populates `user`
-    return roles.includes(user.role);
+    const request = context.switchToHttp().getRequest<Request>();
+    const shopId = request.params.shopId;
+    const user = request['user'] as User;
+
+    if (!user || !shopId) {
+      throw new NotFoundException('User or shopId not found');
+    }
+
+    const shopExists = user.shopsMeta.find(
+      (shopMeta: ShopMeta) => shopMeta.shop.toString() === shopId,
+    );
+
+    if (!shopExists) {
+      throw new NotFoundException(
+        `Shop with ID ${shopId} does not exist for this user`,
+      );
+    }
+
+    console.log(shopId, user, shopExists);
+    return requiredRoles.some((role) => shopExists.roles?.includes(role));
   }
 }
