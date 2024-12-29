@@ -19,6 +19,7 @@ import { UserTokenPayload } from './interface/user-token-payload.interface';
 import { UserTokenType } from './enum/user-token-type.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose, { isObjectIdOrHexString } from 'mongoose';
+import { ShopDocument } from '@api/shop/schema/shop.schema';
 
 @Injectable()
 export class UserService {
@@ -31,7 +32,16 @@ export class UserService {
   }
 
   async createUser(user: CreateUserDto): Promise<UserTokensDto> {
-    const existingUser = await this.getUserByEmail(user.email);
+    const existingUser = await this.repository.findOne(
+      {
+        email: user.email,
+        isActive: true,
+      },
+      {},
+      {},
+      [],
+      false,
+    );
     if (existingUser) {
       throw new ConflictException(
         `User with email ${user.email} already exists.`,
@@ -103,33 +113,16 @@ export class UserService {
   async getUserById(
     userId: string,
   ): Promise<LeanDocument<UserDocument> | null> {
-    try {
-      return await this.repository.findOne({
+    return this.repository.findOne(
+      {
         _id: userId,
         isActive: true,
-      });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return null;
-      }
-      throw error;
-    }
-  }
-
-  async getUserByEmail(
-    email: string,
-  ): Promise<LeanDocument<UserDocument> | null> {
-    try {
-      return await this.repository.findOne({
-        email,
-        isActive: true,
-      });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return null;
-      }
-      throw error;
-    }
+      },
+      {},
+      {},
+      ['shopsMeta.shop'],
+      true,
+    );
   }
 
   async updateUser(
@@ -145,10 +138,17 @@ export class UserService {
   }
 
   private generateAccessToken(user: LeanDocument<UserDocument>): UserTokenDto {
+    const shopsMeta = user.shopsMeta.map((shopMeta) => {
+      return {
+        shop: (shopMeta.shop as ShopDocument)._id.toString(),
+        roles: shopMeta.roles,
+      };
+    });
     const tokenPayload: UserTokenPayload = {
       tokenType: UserTokenType.ACCESS_TOKEN,
       userId: user._id.toString(),
-      ..._pick(user, ['email', 'firstName', 'lastName', 'shopsMeta']),
+      shopsMeta,
+      ..._pick(user, ['email', 'firstName', 'lastName']),
     };
     const accessToken = jwt.sign(
       { ...tokenPayload },
@@ -166,10 +166,17 @@ export class UserService {
   }
 
   private generateRefreshToken(user: LeanDocument<UserDocument>): UserTokenDto {
+    const shopsMeta = user.shopsMeta.map((shopMeta) => {
+      return {
+        shop: (shopMeta.shop as ShopDocument)._id.toString(),
+        roles: shopMeta.roles,
+      };
+    });
     const tokenPayload: UserTokenPayload = {
       tokenType: UserTokenType.REFRESH_TOKEN,
       userId: user._id.toString(),
-      ..._pick(user, ['email', 'firstName', 'lastName', 'shopsMeta']),
+      shopsMeta,
+      ..._pick(user, ['email', 'firstName', 'lastName']),
     };
 
     const refreshToken = jwt.sign(tokenPayload, this.userConfig.jwtSecret, {

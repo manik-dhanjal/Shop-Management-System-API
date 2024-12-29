@@ -10,6 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '@shared/decorator/roles.decorator';
 import { User } from '@api/user/schema/user.schema';
 import { Request } from 'express';
+import { ShopDocument } from '@api/shop/schema/shop.schema';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -34,7 +35,8 @@ export class RolesGuard implements CanActivate {
     }
 
     const shopExists = user.shopsMeta.find(
-      (shopMeta: ShopMeta) => shopMeta.shop.toString() === shopId,
+      (shopMeta: ShopMeta) =>
+        (shopMeta.shop as ShopDocument)._id.toString() === shopId,
     );
 
     if (!shopExists) {
@@ -43,7 +45,6 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    console.log(shopId, user, shopExists);
     return requiredRoles.some((role) => shopExists.roles?.includes(role));
   }
 }
