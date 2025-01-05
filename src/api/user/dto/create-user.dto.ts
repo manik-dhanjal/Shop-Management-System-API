@@ -9,7 +9,6 @@ import {
   Length,
   Matches,
 } from 'class-validator';
-import { ShopMeta } from '../schema/shop-meta.schema';
 import { ShopMetaDto } from './shop-meta.dto';
 import { Type } from 'class-transformer';
 
@@ -54,6 +53,6 @@ export class CreateUserDto {
   @IsOptional()
   @IsArray()
   @IsObject({ each: true })
-  @Type(() => ShopMeta)
+  @Type(() => ShopMetaDto)
   shopsMeta?: ShopMetaDto[];
 }

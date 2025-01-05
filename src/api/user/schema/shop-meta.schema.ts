@@ -8,7 +8,7 @@ export class ShopMeta {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: Shop.name,
-    default: [],
+    required: true,
   })
   shop: Shop;
 

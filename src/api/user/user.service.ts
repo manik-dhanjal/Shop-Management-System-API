@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from './repository/user.repository';
@@ -18,7 +17,7 @@ import { pick as _pick } from 'lodash';
 import { UserTokenPayload } from './interface/user-token-payload.interface';
 import { UserTokenType } from './enum/user-token-type.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
-import mongoose, { isObjectIdOrHexString } from 'mongoose';
+import mongoose, { isObjectIdOrHexString, Types, UpdateQuery } from 'mongoose';
 import { ShopDocument } from '@api/shop/schema/shop.schema';
 
 @Injectable()
@@ -40,7 +39,7 @@ export class UserService {
       {},
       {},
       [],
-      false,
+      true,
     );
     if (existingUser) {
       throw new ConflictException(
@@ -64,16 +63,24 @@ export class UserService {
   async validateUser(
     userCreds: Pick<CreateUserDto, 'email' | 'password'>,
   ): Promise<UserTokensDto> {
-    const user = await this.repository.findOne({
-      email: userCreds.email,
-      isActive: true,
-    });
+    const user = await this.repository.findOne(
+      {
+        email: userCreds.email,
+        isActive: true,
+      },
+      {},
+      {},
+      [],
+      true,
+    );
+    if (!user)
+      throw new UnauthorizedException('Invalid user email or password');
     const isPasswordValid = await bcrypt.compare(
       userCreds.password,
       user.password,
     );
     if (!isPasswordValid) {
-      throw new NotFoundException('Invalid credentials');
+      throw new UnauthorizedException('Invalid user email or password');
     }
     return {
       access: this.generateAccessToken(user),
@@ -135,6 +142,13 @@ export class UserService {
     const mongoUserId = new mongoose.Types.ObjectId(userId);
     await this.repository.findOne(mongoUserId);
     return this.repository.updateOne(mongoUserId, userToUpdate);
+  }
+
+  async updateUserWithQuery(
+    id: Types.ObjectId,
+    updateQuery: UpdateQuery<UserDocument>,
+  ): Promise<LeanDocument<UserDocument>> {
+    return this.repository.updateOne(id, updateQuery);
   }
 
   private generateAccessToken(user: LeanDocument<UserDocument>): UserTokenDto {

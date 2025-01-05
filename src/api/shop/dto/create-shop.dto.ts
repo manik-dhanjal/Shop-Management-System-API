@@ -21,10 +21,6 @@ export class CreateShopDto {
   location: LocationDto;
 
   @IsString()
-  @IsNotEmpty()
-  ownerName: string;
-
-  @IsString()
   @IsOptional()
   gstin?: string;
 

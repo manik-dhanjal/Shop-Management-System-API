@@ -19,12 +19,6 @@ export class Shop {
 
   @Prop({
     type: String,
-    required: true,
-  })
-  ownerName: string;
-
-  @Prop({
-    type: String,
     required: false,
   })
   gstin?: string;

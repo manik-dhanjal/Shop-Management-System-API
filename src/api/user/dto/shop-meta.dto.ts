@@ -6,7 +6,7 @@ export class ShopMetaDto {
   @ApiProperty({ description: 'ID of shops to which user belongs' })
   @IsNotEmpty()
   @IsString()
-  shop: string[];
+  shop: string;
 
   @ApiProperty({ enum: UserRole, description: 'Role assigned to the user' })
   @IsNotEmpty()

@@ -34,7 +34,7 @@ export class UserController {
     return this.userService.validateUser(userCreds);
   }
 
-  @Get('profile')
+  @Get('me')
   async getUserByAccessToken(
     @Request() req,
   ): Promise<LeanDocument<UserDocument>> {
