@@ -21,6 +21,8 @@ import mongoose, { isObjectIdOrHexString, Types, UpdateQuery } from 'mongoose';
 import { ShopDocument } from '@api/shop/schema/shop.schema';
 import { UserRole } from './enum/user-role.enum';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
+import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 
 @Injectable()
 export class UserService {
@@ -91,7 +93,6 @@ export class UserService {
   async validateUser(
     userCreds: Pick<CreateUserDto, 'email' | 'password'>,
   ): Promise<UserTokensDto> {
-    console.log(userCreds);
     const user = await this.repository.findOne(
       {
         email: userCreds.email,
@@ -231,5 +232,66 @@ export class UserService {
       expiresIn: ms(this.userConfig.refreshJwtExpiresIn),
       expiresOn: new Date().getTime() + ms(this.userConfig.refreshJwtExpiresIn),
     };
+  }
+
+  async getPaginatedEmployees(
+    shopId: string,
+    query: PaginationQueryDto<CreateEmployeeDto>,
+  ): Promise<PaginatedResponseDto<LeanDocument<UserDocument>>> {
+    // Set default values for page and limit if not provided
+    const skip = (query.page - 1) * query.limit;
+    return this.repository.findWithPagination(
+      {
+        'shopsMeta.shop': shopId,
+        ...query.filter,
+      },
+      undefined,
+      query.sort,
+      skip,
+      query.limit,
+      ['profileImage'],
+    );
+  }
+
+  async getUserByIdAndShopId(
+    shopId: string,
+    userId: string,
+  ): Promise<LeanDocument<UserDocument> | null> {
+    return this.repository.findOne(
+      {
+        _id: userId,
+        isActive: true,
+        'shopsMeta.shop': shopId,
+      },
+      {},
+      {},
+      ['profileImage'],
+      true,
+    );
+  }
+
+  async updateEmployee(
+    shopId: string,
+    employeeId: string,
+    userData: UpdateUserDto,
+  ): Promise<LeanDocument<UserDocument>> {
+    if (!isObjectIdOrHexString(employeeId))
+      throw new UnauthorizedException('Invalid employee ID');
+
+    const userRecord = this.repository.findOne({
+      _id: employeeId,
+      isActive: true,
+      'shopsMeta.shop': shopId,
+    });
+
+    if (!userRecord)
+      throw new UnauthorizedException(
+        'You are not authorized to access this employee record',
+      );
+
+    return this.repository.updateOne(new Types.ObjectId(employeeId), {
+      ...userData,
+      profileImage: userData.profileImage || null,
+    });
   }
 }

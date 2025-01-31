@@ -8,9 +8,11 @@ import {
   IsString,
   Length,
   Matches,
+  ValidateNested,
 } from 'class-validator';
 import { ShopMetaDto } from './shop-meta.dto';
 import { Type } from 'class-transformer';
+import { LocationDto } from '@shared/dto/location.dto';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'First name of the user' })
@@ -55,4 +57,9 @@ export class CreateUserDto {
   @IsObject({ each: true })
   @Type(() => ShopMetaDto)
   shopsMeta?: ShopMetaDto[];
+
+  @IsObject()
+  @ValidateNested({ each: true })
+  @Type(() => LocationDto)
+  location: LocationDto;
 }

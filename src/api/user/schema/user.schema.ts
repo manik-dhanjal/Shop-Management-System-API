@@ -2,6 +2,7 @@ import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ShopMeta } from './shop-meta.schema';
+import { Location } from '@shared/schema/location.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -55,6 +56,9 @@ export class User {
 
   @Prop({ default: true, type: Boolean, required: false })
   isActive: boolean;
+
+  @Prop({ type: Location })
+  location: Location;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
