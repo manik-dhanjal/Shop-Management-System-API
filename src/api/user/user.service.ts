@@ -19,6 +19,8 @@ import { UserTokenType } from './enum/user-token-type.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose, { isObjectIdOrHexString, Types, UpdateQuery } from 'mongoose';
 import { ShopDocument } from '@api/shop/schema/shop.schema';
+import { UserRole } from './enum/user-role.enum';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
 
 @Injectable()
 export class UserService {
@@ -30,7 +32,7 @@ export class UserService {
     this.userConfig = configService.get<UserConfig>(USER_CONFIG_NAME);
   }
 
-  async createUser(user: CreateUserDto): Promise<UserTokensDto> {
+  async registerUser(user: CreateUserDto): Promise<UserTokensDto> {
     const existingUser = await this.repository.findOne(
       {
         email: user.email,
@@ -58,6 +60,32 @@ export class UserService {
       access: this.generateAccessToken(newUser),
       refresh: this.generateRefreshToken(newUser),
     };
+  }
+
+  async createEmployee(
+    shopId: string,
+    user: CreateEmployeeDto,
+  ): Promise<LeanDocument<UserDocument>> {
+    const existingUser = await this.repository.findOne(
+      {
+        email: user.email,
+        isActive: true,
+      },
+      {},
+      {},
+      [],
+      true,
+    );
+    if (existingUser) {
+      throw new ConflictException(
+        `User with email ${user.email} already exists.`,
+      );
+    }
+    // TODO: create a link and send it to employee to generate password
+    return this.repository.create({
+      ...user,
+      shopsMeta: [{ shop: shopId, roles: [UserRole.EMPLOYEE] }],
+    });
   }
 
   async validateUser(

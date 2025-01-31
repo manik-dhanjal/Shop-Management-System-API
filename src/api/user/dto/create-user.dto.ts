@@ -32,10 +32,10 @@ export class CreateUserDto {
 
   @ApiPropertyOptional({ description: 'Phone number of the user' })
   @IsOptional()
-  @Matches(/^[0-9]{10}$/, {
-    message: 'Phone number must be a 10-digit numeric value',
-  })
-  phone?: number;
+  // @Matches(/^[0-9]{10}$/, {
+  //   message: 'Phone number must be a 10-digit numeric value',
+  // })
+  phone?: string;
 
   @ApiPropertyOptional({ description: 'Profile image ID of the user' })
   @IsOptional()

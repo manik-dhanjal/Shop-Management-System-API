@@ -28,10 +28,10 @@ export class User {
   email: string;
 
   @Prop({
-    type: Number,
+    type: String,
     required: false,
   })
-  phone?: number;
+  phone?: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -42,9 +42,9 @@ export class User {
 
   @Prop({
     type: String,
-    required: true,
+    required: false,
   })
-  password: string;
+  password?: string;
 
   @Prop({
     type: [ShopMeta],

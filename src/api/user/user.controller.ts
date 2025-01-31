@@ -7,6 +7,7 @@ import {
   Post,
   Request,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,26 +16,29 @@ import { LeanDocument } from '@shared/types/lean-document.interface';
 import { UserDocument } from './schema/user.schema';
 import { NoAuth } from '@shared/decorator/no-auth.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Roles } from '@shared/decorator/roles.decorator';
+import { UserRole } from './enum/user-role.enum';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
 
-@Controller('user')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @NoAuth()
-  @Post('register')
+  @Post('user/register')
   async register(@Body() newUser: CreateUserDto): Promise<UserTokensDto> {
-    return this.userService.createUser(newUser);
+    return this.userService.registerUser(newUser);
   }
 
   @NoAuth()
-  @Post('login')
+  @Post('user/login')
   async login(
     @Body() userCreds: Pick<CreateUserDto, 'email' | 'password'>,
   ): Promise<UserTokensDto> {
     return this.userService.validateUser(userCreds);
   }
 
-  @Get('me')
+  @Get('user/me')
   async getUserByAccessToken(
     @Request() req,
   ): Promise<LeanDocument<UserDocument>> {
@@ -42,7 +46,7 @@ export class UserController {
   }
 
   @NoAuth()
-  @Get('access-token')
+  @Get('user/access-token')
   async getAccessToken(@Request() req): Promise<UserTokenDto> {
     const [type, token] = req.headers.authorization?.split(' ') ?? [];
     const refreshToken = type === 'Bearer' ? token : null;
@@ -52,11 +56,20 @@ export class UserController {
     return this.userService.getAccessToken(refreshToken);
   }
 
-  @Patch(':userId')
+  @Patch('user/:userId')
   async updateUser(
     @Body() user: UpdateUserDto,
     @Param('userId') userId: string,
   ): Promise<LeanDocument<UserDocument>> {
     return this.userService.updateUser(userId, user);
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Post('shop/:shopId/user/employee')
+  async createEmployee(
+    @Param('shopId') shopId: string,
+    @Body() user: CreateEmployeeDto,
+  ): Promise<LeanDocument<UserDocument>> {
+    return this.userService.createEmployee(shopId, user);
   }
 }
