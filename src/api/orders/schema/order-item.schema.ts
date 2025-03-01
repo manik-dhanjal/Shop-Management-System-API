@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Product } from 'src/api/products/schema/product.schema';
-import { Order } from './order.schema';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { Shop } from '@api/shop/schema/shop.schema';
+import mongoose, { Types } from 'mongoose';
+import { TaxDetail, TaxDetailSchema } from './tax-detail.schema';
 
 @Schema({
   _id: false,
@@ -13,7 +12,16 @@ export class OrderItem {
     ref: Product.name,
     required: true,
   })
-  product: Product;
+  productId: Types.ObjectId;
+
+  @Prop({ required: true, type: String })
+  name: string;
+
+  @Prop({ required: true, type: String })
+  sku: string;
+
+  @Prop({ required: true, type: String })
+  hsnCode: string;
 
   @Prop({
     type: Number,
@@ -21,33 +29,25 @@ export class OrderItem {
   })
   quantity: number;
 
-  @Prop({
-    type: String,
-    required: true,
-  })
-  measuringUnit: string;
-
-  @Prop({
-    type: String,
-    required: true,
-  })
-  currency: string;
+  @Prop({ required: true, min: 0, type: Number })
+  unitPrice: number;
 
   @Prop({
     type: Number,
-    required: true,
+    required: false,
+    default: 0,
+    min: 0,
   })
-  price: number; // price of single unit, without discount and gst
+  discount: number; //Discount applied to the item, if any
 
-  @Prop({
-    type: Number,
-    required: true,
-  })
-  discount?: number; //Discount applied to the item, if any
+  @Prop({ required: true, min: 0, type: Number })
+  taxableValue: number;
 
-  @Prop({
-    type: Number,
-    required: true,
-  })
-  gstRate: number; //Applicable GST rate, e.g., 5%, 12%, 18%, 28%
+  @Prop({ type: [TaxDetailSchema], default: [] })
+  taxes: TaxDetail[];
+
+  @Prop({ required: true, min: 0, type: Number })
+  totalPrice: number;
 }
+
+export const OrderItemSchema = SchemaFactory.createForClass(OrderItem);

@@ -4,16 +4,16 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { OrderPaymentStatus } from '../enum/order-payment-status.order';
 import { OrderItemDto } from './order-item.dto';
-import { LocationDto } from '@shared/dto/location.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { InvoiceType } from '../enum/invoice-type.enum';
+import { PaymentDetailsDto } from './payment-details.dto';
+import { BillingDetailsDto } from './billing-details.dto';
 
 export class CreateOrderDto {
   @ApiProperty({
@@ -53,6 +53,15 @@ export class CreateOrderDto {
   shop: string;
 
   @ApiProperty({
+    description: 'Type of invoice generated',
+    enum: InvoiceType,
+    required: true,
+  })
+  @IsEnum(InvoiceType)
+  @IsNotEmpty()
+  invoiceType: InvoiceType;
+
+  @ApiProperty({
     description: 'List of order items',
     type: [OrderItemDto],
     required: true,
@@ -70,58 +79,23 @@ export class CreateOrderDto {
   @IsOptional()
   description?: string;
 
-  @ApiPropertyOptional({
-    description: 'Place of supply details',
-    type: LocationDto,
-  })
-  @IsOptional()
-  @Type(() => LocationDto)
-  @ValidateNested({ each: true })
-  placeOfSupply?: LocationDto;
-
   @ApiProperty({
-    description: 'Total GST amount for the order',
-    example: 18.5,
+    description: 'Billing details including taxes, discounts, and final amount',
+    type: BillingDetailsDto,
     required: true,
   })
-  @IsNumber()
-  @IsNotEmpty()
-  gstTotal: number;
+  @ValidateNested()
+  @Type(() => BillingDetailsDto)
+  billing: BillingDetailsDto;
 
   @ApiProperty({
-    description: 'Total payable amount',
-    example: 150.75,
+    description: 'Payment details for the order',
+    type: PaymentDetailsDto,
     required: true,
   })
-  @IsNumber()
-  @IsNotEmpty()
-  totalAmount: number;
-
-  @ApiProperty({
-    description: 'Payment method used',
-    example: 'Credit Card',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  paymentMethod: string;
-
-  @ApiProperty({
-    description: 'Payment status of the order',
-    enum: OrderPaymentStatus,
-    required: true,
-  })
-  @IsEnum(OrderPaymentStatus)
-  @IsNotEmpty()
-  paymentStatus: OrderPaymentStatus;
-
-  @ApiPropertyOptional({
-    description: 'Transaction ID if payment was made online',
-    example: 'TXN987654321',
-  })
-  @IsString()
-  @IsOptional()
-  transactionId?: string;
+  @ValidateNested()
+  @Type(() => PaymentDetailsDto)
+  payment: PaymentDetailsDto;
 
   @ApiProperty({
     description: 'Order placement date and time',
@@ -131,5 +105,5 @@ export class CreateOrderDto {
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)
-  createdAt?: Date;
+  createdAt: Date;
 }

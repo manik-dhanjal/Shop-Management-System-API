@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { OrderItem } from './order-item.schema';
+import { OrderItem, OrderItemSchema } from './order-item.schema';
 import { Shop } from '@api/shop/schema/shop.schema';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { OrderPaymentStatus } from '../enum/order-payment-status.order';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { User } from '@api/user/schema/user.schema';
-import { Location } from '@shared/schema/location.schema';
 import { Customer } from '@api/customer/schema/customer.schema';
+import { InvoiceType } from '../enum/invoice-type.enum';
+import { BillingDetails, BillingDetailsSchema } from './billing-details.schema';
+import { PaymentDetails, PaymentDetailsSchema } from './payment.detail.dto';
 
 export type OrderDocument = HydratedDocument<Order>;
 
@@ -13,35 +14,35 @@ export type OrderDocument = HydratedDocument<Order>;
   timestamps: true,
 })
 export class Order {
-  @Prop({
-    type: String,
-    required: true,
-  })
-  orderNumber: string; //invoice Number
+  @Prop({ required: true, unique: true, type: String })
+  orderNumber: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: Customer.name,
     required: true,
   })
-  customer: Customer;
+  customer: Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: User.name,
     required: true,
   })
-  billedBy: User;
+  billedBy: Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: Shop.name,
     required: true,
   })
-  shop: Shop;
+  shop: Types.ObjectId;
+
+  @Prop({ type: String, enum: InvoiceType, required: true })
+  invoiceType: InvoiceType;
 
   @Prop({
-    type: [OrderItem],
+    type: [OrderItemSchema],
     required: true,
   })
   items: OrderItem[];
@@ -52,42 +53,11 @@ export class Order {
   })
   description?: string;
 
-  @Prop({
-    type: Location,
-    required: false,
-  })
-  placeOfSupply?: Location;
+  @Prop({ type: BillingDetailsSchema, required: true })
+  billing: BillingDetails;
 
-  @Prop({
-    type: Number,
-    required: true,
-  })
-  gstTotal: number; // Total GST amount for the order
-
-  @Prop({
-    type: Number,
-    required: true,
-  })
-  totalAmount: number; // Total amount for the order excluding GST
-
-  @Prop({
-    type: String,
-    required: true,
-  })
-  paymentMethod: string; //  'Credit Card', 'PayPal', 'Bank Transfer', 'Cash'
-
-  @Prop({
-    type: String,
-    enum: OrderPaymentStatus,
-    required: true,
-  })
-  paymentStatus: OrderPaymentStatus; // 'Paid', 'Unpaid', 'Refunded'
-
-  @Prop({
-    type: String,
-    required: false,
-  })
-  transactionId?: string;
+  @Prop({ type: PaymentDetailsSchema, required: true })
+  payment: PaymentDetails;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

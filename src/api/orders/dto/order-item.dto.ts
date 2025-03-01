@@ -3,9 +3,14 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
+  ValidateNested,
+  IsArray,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { TaxDetailDto } from './tax-detail.dto';
 
 export class OrderItemDto {
   @ApiProperty({
@@ -13,60 +18,91 @@ export class OrderItemDto {
     example: '60af8842c4562c001f3b7b50',
     required: true,
   })
-  @IsMongoId()
   @IsNotEmpty()
-  product: string;
+  @IsMongoId()
+  productId: string;
+
+  @ApiProperty({
+    description: 'Name of the product',
+    example: 'Wireless Mouse',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description: 'Stock Keeping Unit (SKU) of the product',
+    example: 'WM-123',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  sku: string;
+
+  @ApiProperty({
+    description: 'HSN Code for tax compliance',
+    example: '84716060',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  hsnCode: string;
 
   @ApiProperty({
     description: 'Quantity of the product ordered',
     example: 2,
     required: true,
   })
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
   quantity: number;
 
   @ApiProperty({
-    description: 'Unit of measurement for the product',
-    example: 'kg',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  measuringUnit: string;
-
-  @ApiProperty({
-    description: 'Currency in which the order is priced',
-    example: 'USD',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  currency: string;
-
-  @ApiProperty({
     description: 'Price per unit of the product',
-    example: 50.75,
+    example: 800.0,
     required: true,
   })
-  @IsNumber()
   @IsNotEmpty()
-  price: number;
+  @IsNumber()
+  @IsPositive()
+  unitPrice: number;
 
   @ApiPropertyOptional({
     description: 'Discount applied to the product (if any)',
-    example: 5.0,
+    example: 50.0,
+    default: 0,
   })
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
+  @IsPositive()
   discount?: number;
 
   @ApiProperty({
-    description: 'GST rate applicable on the product',
-    example: 18,
-    required: true,
+    description: 'Taxable value after applying discount',
+    example: 1550.0,
   })
   @IsNumber()
+  @IsPositive()
   @IsNotEmpty()
-  gstRate: number;
+  taxableValue: number;
+
+  @ApiProperty({
+    description: 'List of applicable taxes on the item',
+    type: [TaxDetailDto],
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TaxDetailDto)
+  taxes: TaxDetailDto[];
+
+  @ApiProperty({
+    description: 'Total amount after applying discount and taxes',
+    example: 418.0,
+  })
+  @IsNumber()
+  @IsPositive()
+  @IsNotEmpty()
+  totalPrice: number;
 }
