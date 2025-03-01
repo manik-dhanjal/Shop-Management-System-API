@@ -1,12 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { OrderItem } from './order-item.schema';
 import { Shop } from '@api/shop/schema/shop.schema';
-import { Recipient } from './recipient.schema';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { OrderPaymentStatus } from '../enum/order-payment-status.order';
+import { User } from '@api/user/schema/user.schema';
+import { Location } from '@shared/schema/location.schema';
+import { Customer } from '@api/customer/schema/customer.schema';
 
 export type OrderDocument = HydratedDocument<Order>;
 
-@Schema()
+@Schema({
+  timestamps: true,
+})
 export class Order {
   @Prop({
     type: String,
@@ -15,16 +20,18 @@ export class Order {
   orderNumber: string; //invoice Number
 
   @Prop({
-    type: Date,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Customer.name,
     required: true,
   })
-  orderDate: Date;
+  customer: Customer;
 
   @Prop({
-    type: Recipient,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
     required: true,
   })
-  recipient: Recipient;
+  billedBy: User;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -34,8 +41,7 @@ export class Order {
   shop: Shop;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: OrderItem.name,
+    type: [OrderItem],
     required: true,
   })
   items: OrderItem[];
@@ -56,25 +62,32 @@ export class Order {
     type: Number,
     required: true,
   })
-  gst_total: number; // Total GST amount for the order
+  gstTotal: number; // Total GST amount for the order
 
   @Prop({
     type: Number,
     required: true,
   })
-  total_amount: number; // Total amount for the order excluding GST
+  totalAmount: number; // Total amount for the order excluding GST
 
   @Prop({
     type: String,
     required: true,
   })
-  payment_method: string; //  'Credit Card', 'PayPal', 'Bank Transfer', 'Cash'
+  paymentMethod: string; //  'Credit Card', 'PayPal', 'Bank Transfer', 'Cash'
 
   @Prop({
     type: String,
+    enum: OrderPaymentStatus,
     required: true,
   })
-  payment_status: string; // 'Paid', 'Unpaid', 'Refunded'
+  paymentStatus: OrderPaymentStatus; // 'Paid', 'Unpaid', 'Refunded'
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  transactionId?: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

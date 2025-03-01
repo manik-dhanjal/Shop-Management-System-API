@@ -16,7 +16,7 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api');
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger-docs', app, documentFactory);
+  SwaggerModule.setup('oas-docs', app, documentFactory);
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT || 3001);
 }
