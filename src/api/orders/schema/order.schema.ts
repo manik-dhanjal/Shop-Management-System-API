@@ -15,7 +15,7 @@ export type OrderDocument = HydratedDocument<Order>;
 })
 export class Order {
   @Prop({ required: true, unique: true, type: String })
-  orderNumber: string;
+  invoiceId: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

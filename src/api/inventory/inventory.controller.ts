@@ -1,6 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 
-@Controller('api/shop/:shop/inventory')
+@Controller({
+  version: '1',
+  path: 'shop/:shop/inventory',
+})
 export class InventoryController {
   constructor() {}
 

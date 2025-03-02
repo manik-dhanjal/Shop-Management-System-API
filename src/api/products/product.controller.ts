@@ -17,16 +17,16 @@ import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 import { Roles } from '@shared/decorator/roles.decorator';
 import { UserRole } from '@api/user/enum/user-role.enum';
 
+@Controller({ path: 'shop/:shopId/product', version: '1' })
 @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
-@Controller('shop/:shopId/product')
 export class ProductsController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get(':id')
+  @Get(':productId')
   async getProduct(
-    @Param('id') id: string,
+    @Param('productId') productId: string,
   ): Promise<LeanDocument<ProductDocument>> {
-    return this.productService.getProductById(id);
+    return this.productService.getProductById(productId);
   }
 
   @Post('paginated')

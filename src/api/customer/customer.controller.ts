@@ -8,6 +8,7 @@ import {
   Body,
   Query,
   UseGuards,
+  Version,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -15,11 +16,14 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 
-@Controller('customers')
+@Controller({
+  path: '/shop/:shopId/customer',
+  version: '1',
+})
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
-  @Post(':shopId')
+  @Post()
   async createCustomer(
     @Param('shopId') shopId: string,
     @Body() createCustomerDto: CreateCustomerDto,
@@ -27,7 +31,7 @@ export class CustomerController {
     return this.customerService.createCustomer(shopId, createCustomerDto);
   }
 
-  @Get(':shopId/:customerId')
+  @Get(':customerId')
   async getCustomerById(
     @Param('shopId') shopId: string,
     @Param('customerId') customerId: string,
@@ -35,7 +39,7 @@ export class CustomerController {
     return this.customerService.getCustomerById(shopId, customerId);
   }
 
-  @Patch(':shopId/:customerId')
+  @Patch(':customerId')
   async updateCustomer(
     @Param('shopId') shopId: string,
     @Param('customerId') customerId: string,
@@ -48,7 +52,7 @@ export class CustomerController {
     );
   }
 
-  @Get(':shopId')
+  @Get()
   async getPaginatedCustomers(
     @Param('shopId') shopId: string,
     @Query() query: PaginationQueryDto<CreateCustomerDto>,
@@ -56,7 +60,7 @@ export class CustomerController {
     return this.customerService.getPaginatedCustomer(shopId, query);
   }
 
-  @Delete(':shopId/:customerId')
+  @Delete(':customerId')
   async deleteCustomer(
     @Param('shopId') shopId: string,
     @Param('customerId') customerId: string,

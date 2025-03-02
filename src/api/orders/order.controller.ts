@@ -17,8 +17,11 @@ import { OrderService } from './order.service';
 import { UserRole } from '@api/user/enum/user-role.enum';
 import { Roles } from '@shared/decorator/roles.decorator';
 
+@Controller({
+  path: 'shop/:shopId/order',
+  version: '1',
+})
 @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
-@Controller('api/shop/:shopId/orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 

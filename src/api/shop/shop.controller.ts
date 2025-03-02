@@ -15,7 +15,7 @@ import { UpdateShopDto } from './dto/update-shop.dto';
 import { Roles } from '@shared/decorator/roles.decorator';
 import { UserRole } from '@api/user/enum/user-role.enum';
 
-@Controller('shop')
+@Controller({ path: 'shop', version: '1' })
 export class ShopController {
   constructor(private readonly service: ShopService) {}
 

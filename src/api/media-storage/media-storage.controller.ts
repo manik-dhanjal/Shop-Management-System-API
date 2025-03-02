@@ -16,8 +16,12 @@ import { LeanDocument } from '@shared/types/lean-document.interface';
 import { CreateMediaMetadata } from './dto/create-media-metadata.dto';
 import { UserRole } from '@api/user/enum/user-role.enum';
 import { Roles } from '@shared/decorator/roles.decorator';
+
+@Controller({
+  path: '/shop/:shopId/media-storage',
+  version: '1',
+})
 @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
-@Controller('/shop/:shopId/media-storage')
 export class MediaStorageController {
   constructor(private readonly mediaStorageService: MediaStorageService) {}
 

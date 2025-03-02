@@ -1,10 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // enable URI versioning onto endpoints
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
+  // Initate validation pipeline for DTOs
+  app.useGlobalPipes(new ValidationPipe());
+
+  // Initiate swagger for API documentation
   const config = new DocumentBuilder()
     .setTitle('Shop Management System')
     .setDescription(
@@ -17,7 +27,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('oas-docs', app, documentFactory);
-  app.useGlobalPipes(new ValidationPipe());
+
+  // expose 3001 port for APIs
   await app.listen(process.env.PORT || 3001);
 }
 bootstrap();

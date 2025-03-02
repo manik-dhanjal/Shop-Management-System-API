@@ -17,13 +17,13 @@ import { BillingDetailsDto } from './billing-details.dto';
 
 export class CreateOrderDto {
   @ApiProperty({
-    description: 'Unique order number',
+    description: 'Unique Invoice number',
     example: 'ORD123456',
     required: true,
   })
   @IsString()
   @IsNotEmpty()
-  orderNumber: string;
+  invoiceId: string;
 
   @ApiProperty({
     description: 'Customer ID',
