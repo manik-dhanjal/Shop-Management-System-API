@@ -1,6 +1,12 @@
-import { IsArray, IsNumber, IsPositive, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TaxDetailDto } from './tax-detail.dto';
 
 export class BillingDetailsDto {
@@ -17,14 +23,15 @@ export class BillingDetailsDto {
   @IsPositive()
   discounts: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'List of applicable taxes on the item',
     type: [TaxDetailDto],
   })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TaxDetailDto)
-  taxes: TaxDetailDto[];
+  taxes?: TaxDetailDto[];
 
   @ApiProperty({
     description: 'Grand total before rounding off',

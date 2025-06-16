@@ -6,7 +6,7 @@ import { User } from '@api/user/schema/user.schema';
 import { Customer } from '@api/customer/schema/customer.schema';
 import { InvoiceType } from '../enum/invoice-type.enum';
 import { BillingDetails, BillingDetailsSchema } from './billing-details.schema';
-import { PaymentDetails, PaymentDetailsSchema } from './payment.detail.dto';
+import { PaymentDetails, PaymentDetailsSchema } from './payment.detail.schema';
 
 export type OrderDocument = HydratedDocument<Order>;
 

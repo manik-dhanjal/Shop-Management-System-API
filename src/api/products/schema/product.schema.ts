@@ -3,6 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { Shop } from '@api/shop/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
 import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
+import { Inventory } from './inventory.schema';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -69,6 +70,13 @@ export class Product {
     required: true,
   })
   sgstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
+
+  @Prop({
+    type: [Inventory],
+    required: false,
+    default: [],
+  })
+  inventory: Inventory[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

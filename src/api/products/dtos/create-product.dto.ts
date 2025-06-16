@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -9,8 +9,13 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
 import { ProductPropertyDto } from './product-property.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { InventoryDto } from './inventory.dto';
+import mongoose from 'mongoose';
+import { CreateInventoryDto } from './create-inventory.dto';
 
 export default class CreateProductDto {
   @IsString()
@@ -61,4 +66,14 @@ export default class CreateProductDto {
 
   @IsNumber()
   sgstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
+
+  @ApiProperty({
+    description: 'Inventory details for the product',
+    type: [CreateInventoryDto],
+    required: false,
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateInventoryDto)
+  inventory?: CreateInventoryDto[];
 }

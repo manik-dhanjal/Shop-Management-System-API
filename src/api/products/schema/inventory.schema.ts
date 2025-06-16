@@ -1,25 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { Product } from 'src/api/products/schema/product.schema';
+import mongoose from 'mongoose';
 import { Shop } from '@api/shop/schema/shop.schema';
-import { Stock } from './stock.schema';
 
-export type InventoryDocument = HydratedDocument<Inventory>;
-
-@Schema()
+@Schema({ _id: false })
 export class Inventory {
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Product.name,
-    required: true,
-  })
-  product: Product;
-
   @Prop({
     type: Number,
     required: true,
   })
   purchasePrice: number;
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  sellPrice: Number;
 
   @Prop({
     type: String,
@@ -32,26 +27,25 @@ export class Inventory {
     ref: Shop.name,
     required: true,
   })
-  supplier: Shop;
+  supplier: mongoose.Schema.Types.ObjectId;
 
   @Prop({
-    type: Stock,
+    type: Number,
     required: true,
   })
-  stock: Stock;
+  quantity: number;
 
   @Prop({
     type: String,
     required: true,
   })
-  invoice: string;
+  unit: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Shop.name,
+    type: String,
     required: true,
   })
-  shop: Shop;
+  invoiceUrl: string;
 }
 
 export const InventorySchema = SchemaFactory.createForClass(Inventory);

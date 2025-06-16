@@ -14,23 +14,11 @@ export class OrderItem {
   })
   productId: Types.ObjectId;
 
-  @Prop({ required: true, type: String })
-  name: string;
-
-  @Prop({ required: true, type: String })
-  sku: string;
-
-  @Prop({ required: true, type: String })
-  hsnCode: string;
-
   @Prop({
     type: Number,
     required: true,
   })
   quantity: number;
-
-  @Prop({ required: true, min: 0, type: Number })
-  unitPrice: number;
 
   @Prop({
     type: Number,
@@ -43,8 +31,8 @@ export class OrderItem {
   @Prop({ required: true, min: 0, type: Number })
   taxableValue: number;
 
-  @Prop({ type: [TaxDetailSchema], default: [] })
-  taxes: TaxDetail[];
+  @Prop({ type: [TaxDetailSchema], required: false })
+  taxes?: TaxDetail[];
 
   @Prop({ required: true, min: 0, type: Number })
   totalPrice: number;

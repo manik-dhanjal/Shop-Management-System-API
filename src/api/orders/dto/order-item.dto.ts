@@ -4,7 +4,6 @@ import {
   IsNumber,
   IsOptional,
   IsPositive,
-  IsString,
   ValidateNested,
   IsArray,
 } from 'class-validator';
@@ -23,33 +22,6 @@ export class OrderItemDto {
   productId: string;
 
   @ApiProperty({
-    description: 'Name of the product',
-    example: 'Wireless Mouse',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @ApiProperty({
-    description: 'Stock Keeping Unit (SKU) of the product',
-    example: 'WM-123',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  sku: string;
-
-  @ApiProperty({
-    description: 'HSN Code for tax compliance',
-    example: '84716060',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  hsnCode: string;
-
-  @ApiProperty({
     description: 'Quantity of the product ordered',
     example: 2,
     required: true,
@@ -58,16 +30,6 @@ export class OrderItemDto {
   @IsNumber()
   @IsPositive()
   quantity: number;
-
-  @ApiProperty({
-    description: 'Price per unit of the product',
-    example: 800.0,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  @IsPositive()
-  unitPrice: number;
 
   @ApiPropertyOptional({
     description: 'Discount applied to the product (if any)',
