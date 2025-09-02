@@ -1,0 +1,19 @@
+previews:
+  generation: automatic
+services:
+  - type: web
+    plan: standard
+    previews:
+      plan: starter
+    name: express-server
+    runtime: node
+  - type: keyvalue
+    plan: standard
+    previewPlan: starter
+    name: private cache
+    ipAllowList: [] # only allow internal connections
+databases:
+  - name: my_test_db
+    plan: pro-4gb
+    previewPlan: basic-1gb
+    previewDiskSizeGB: 5
