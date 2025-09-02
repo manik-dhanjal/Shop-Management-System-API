@@ -14,13 +14,15 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '@shared/gaurd/auth.gaurd';
 import { UserModule } from '@api/user/user.module';
 import { RolesGuard } from '@shared/gaurd/roles.gaurd';
+import { gstConfig } from '@config/gst.config';
+import { GstModule } from '@api/gst/gst.module';
 
 @Module({
   imports: [
     ApiModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [smsDatabaseConfig, cloudinaryConfig, userConfig],
+      load: [smsDatabaseConfig, cloudinaryConfig, userConfig, gstConfig],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -29,6 +31,7 @@ import { RolesGuard } from '@shared/gaurd/roles.gaurd';
       inject: [ConfigService],
     }),
     UserModule,
+    GstModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Location } from 'src/shared/schema/location.schema';
+import { GstDetails } from './gst-details.schema';
 
 export type ShopDocument = HydratedDocument<Shop>;
 
@@ -18,10 +19,10 @@ export class Shop {
   location: Location;
 
   @Prop({
-    type: String,
+    type: GstDetails,
     required: false,
   })
-  gstin?: string;
+  gstDetails?: GstDetails;
 
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],

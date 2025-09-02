@@ -20,9 +20,10 @@ export class CreateShopDto {
   @Type(() => LocationDto)
   location: LocationDto;
 
-  @IsString()
   @IsOptional()
-  gstin?: string;
+  @ValidateNested()
+  @Type(() => GstDetailsDto)
+  gstDetails?: GstDetailsDto;
 
   @IsArray()
   @IsMongoId({ each: true })
