@@ -2,16 +2,19 @@ previews:
   generation: automatic
 services:
   - type: web
-    plan: standard
-    previews:
-      plan: starter
-    name: express-server
+    name: nestjs-server
     runtime: node
-  - type: keyvalue
     plan: standard
-    previewPlan: starter
-    name: private cache
-    ipAllowList: [] # only allow internal connections
+    buildCommand: yarn install && yarn build
+    startCommand: yarn start:prod
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add other environment variables as needed
+    # Optionally, set up health checks
+    healthCheckPath: /health
+
 databases:
   - name: my_test_db
     plan: pro-4gb
