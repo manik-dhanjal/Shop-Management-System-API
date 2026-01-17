@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, mongo } from 'mongoose';
 import { Shop } from '@api/shop/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
 import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
-import { Inventory } from './inventory.schema';
+import { MeasuringUnit } from '../enum/measuring-unit.enum';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -72,11 +72,24 @@ export class Product {
   sgstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
 
   @Prop({
-    type: [Inventory],
+    type: [mongoose.Schema.Types.ObjectId],
     required: false,
     default: [],
   })
-  inventory: Inventory[];
+  inventory: mongoose.Types.ObjectId[];
+
+  @Prop({
+    type: Number,
+    required: false,
+    default: 0,
+  })
+  stock: number;
+
+  @Prop({
+    type: String,
+    required: true,
+  })
+  measuringUnit: MeasuringUnit; // e.g., pcs, kg, liters
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

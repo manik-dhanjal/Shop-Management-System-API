@@ -3,19 +3,19 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsEnum,
   IsMongoId,
   IsNumber,
   IsObject,
   IsOptional,
   IsString,
   MaxLength,
-  ValidateNested,
+  Min,
 } from 'class-validator';
 import { ProductPropertyDto } from './product-property.dto';
-import { ApiProperty } from '@nestjs/swagger';
-import { InventoryDto } from './inventory.dto';
-import mongoose from 'mongoose';
-import { CreateInventoryDto } from './create-inventory.dto';
+import { CreateInventoryDto } from '@api/inventory/dto/create-inventory.dto';
+import { OmitType } from '@nestjs/swagger';
+import { MeasuringUnit } from '../enum/measuring-unit.enum';
 
 export default class CreateProductDto {
   @IsString()
@@ -67,13 +67,19 @@ export default class CreateProductDto {
   @IsNumber()
   sgstRate: number; //Applicable IGST rate, e.g., 5%, 12%, 18%, 28%
 
-  @ApiProperty({
-    description: 'Inventory details for the product',
-    type: [CreateInventoryDto],
-    required: false,
-  })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  stock: number;
+
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateInventoryDto)
-  inventory?: CreateInventoryDto[];
+  @IsObject({ each: true })
+  @Type(() => OmitType(CreateInventoryDto, ['shop', 'product']))
+  @ArrayMaxSize(50)
+  @ArrayMinSize(0)
+  @IsOptional()
+  inventory: Omit<CreateInventoryDto, 'shop' | 'product'>[];
+
+  @IsEnum(MeasuringUnit)
+  measuringUnit: MeasuringUnit;
 }

@@ -21,8 +21,8 @@ import mongoose, { isObjectIdOrHexString, Types, UpdateQuery } from 'mongoose';
 import { ShopDocument } from '@api/shop/schema/shop.schema';
 import { UserRole } from './enum/user-role.enum';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
+import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 
 @Injectable()
 export class UserService {

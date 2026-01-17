@@ -12,33 +12,62 @@ import { UpdateProductDto } from './dtos/update-product.dto';
 import mongoose, { isObjectIdOrHexString, Types } from 'mongoose';
 import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
+import { InventoryService } from '@api/inventory/inventory.service';
+import { omit as _omit } from 'lodash';
 
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
-  constructor(private readonly repository: ProductRepository) {}
+  constructor(
+    private readonly repository: ProductRepository,
+    private readonly inventoryService: InventoryService,
+  ) {}
 
   async createProduct(
     shopId: string,
     newProduct: CreateProductDto,
-  ): Promise<LeanDocument<ProductDocument>> {
+  ): Promise<Omit<LeanDocument<ProductDocument>, 'inventory'>> {
     if (!isObjectIdOrHexString(shopId))
       throw new UnauthorizedException(`${shopId} is not valid shop Mongo ID`);
     const createdProduct = await this.repository.create({
       shop: new Types.ObjectId(shopId),
-      ...newProduct,
+      ..._omit(newProduct, ['inventory']),
     });
-    return createdProduct.toJSON();
+
+    if (newProduct.inventory && newProduct.inventory.length > 0) {
+      const inventoryIds = await this.inventoryService.addInventoryBulk(
+        newProduct.inventory.map((inventory) => ({
+          ...inventory,
+          product: createdProduct._id,
+          shop: new Types.ObjectId(shopId),
+        })),
+      );
+      this.repository.updateOne(createdProduct._id, {
+        $push: { inventory: { $each: inventoryIds } },
+      });
+    }
+    return _omit(createdProduct.toJSON(), ['inventory']);
   }
 
-  async getProductById(id: string): Promise<LeanDocument<ProductDocument>> {
-    return this.repository.findOne({ _id: id }, {}, {}, ['images']);
+  async getProductById(
+    id: string,
+  ): Promise<Omit<LeanDocument<ProductDocument>, 'inventory'>> {
+    return this.repository.findOne(
+      { _id: id },
+      {
+        inventory: 0,
+      },
+      {},
+      ['images'],
+    );
   }
 
   async getPaginatedProducts(
     shopId: string,
     query: PaginationQueryDto<CreateProductDto>,
-  ): Promise<PaginatedResponseDto<LeanDocument<ProductDocument>>> {
+  ): Promise<
+    PaginatedResponseDto<Omit<LeanDocument<ProductDocument>, 'inventory'>>
+  > {
     // Set default values for page and limit if not provided
     const skip = (query.page - 1) * query.limit;
     return this.repository.findWithPagination(
@@ -46,7 +75,9 @@ export class ProductService {
         shop: shopId,
         ...query.filter,
       },
-      undefined,
+      {
+        inventory: 0,
+      },
       query.sort,
       skip,
       query.limit,
@@ -57,11 +88,12 @@ export class ProductService {
   async updateProductById(
     id: string,
     product: UpdateProductDto,
-  ): Promise<LeanDocument<ProductDocument>> {
+  ): Promise<Omit<LeanDocument<ProductDocument>, 'inventory'>> {
     if (!isObjectIdOrHexString(id))
       throw new NotFoundException('Invalid Shop ID');
     const productId = new mongoose.Types.ObjectId(id);
-    return this.repository.updateOne(productId, product);
+    const updatedProduct = await this.repository.updateOne(productId, product);
+    return _omit(updatedProduct, ['inventory']);
   }
 
   async deleteProductById(id: string): Promise<void> {

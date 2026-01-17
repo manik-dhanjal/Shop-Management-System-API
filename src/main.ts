@@ -12,7 +12,15 @@ async function bootstrap() {
   });
 
   // Initate validation pipeline for DTOs
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  app.enableCors();
+  app.setGlobalPrefix('api');
 
   // Initiate swagger for API documentation
   const config = new DocumentBuilder()
@@ -23,8 +31,6 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('shops')
     .build();
-  app.enableCors();
-  app.setGlobalPrefix('api');
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('oas-docs', app, documentFactory);
 

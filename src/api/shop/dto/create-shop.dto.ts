@@ -9,6 +9,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { GstDetailsDto } from './gst-details.dto';
 
 export class CreateShopDto {
   @IsString()

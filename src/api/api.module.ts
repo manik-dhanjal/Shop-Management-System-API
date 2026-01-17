@@ -5,6 +5,8 @@ import { MediaStorageModule } from './media-storage/media-storage.module';
 import { UserModule } from './user/user.module';
 import { OrderModule } from './orders/order.module';
 import { CustomerModule } from './customer/customer.module';
+import { Inventory } from './inventory/schema/inventory.schema';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { CustomerModule } from './customer/customer.module';
     UserModule,
     OrderModule,
     CustomerModule,
+    InventoryModule,
   ],
   providers: [],
 })

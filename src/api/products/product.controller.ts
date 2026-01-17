@@ -25,7 +25,7 @@ export class ProductsController {
   @Get(':productId')
   async getProduct(
     @Param('productId') productId: string,
-  ): Promise<LeanDocument<ProductDocument>> {
+  ): Promise<Omit<LeanDocument<ProductDocument>, 'inventory'>> {
     return this.productService.getProductById(productId);
   }
 
@@ -33,7 +33,9 @@ export class ProductsController {
   async getPaginatedProducts(
     @Param('shopId') shopId: string,
     @Body() query: PaginationQueryDto<CreateProductDto>,
-  ): Promise<PaginatedResponseDto<LeanDocument<ProductDocument>>> {
+  ): Promise<
+    PaginatedResponseDto<Omit<LeanDocument<ProductDocument>, 'inventory'>>
+  > {
     return this.productService.getPaginatedProducts(shopId, query);
   }
 
@@ -41,7 +43,7 @@ export class ProductsController {
   async addProduct(
     @Param('shopId') shopId: string,
     @Body() product: CreateProductDto,
-  ): Promise<LeanDocument<ProductDocument>> {
+  ): Promise<Omit<LeanDocument<ProductDocument>, 'inventory'>> {
     return this.productService.createProduct(shopId, product);
   }
 
@@ -49,7 +51,7 @@ export class ProductsController {
   async updateProduct(
     @Param('productId') productId: string,
     @Body() product: UpdateProductDto,
-  ): Promise<LeanDocument<ProductDocument>> {
+  ): Promise<Omit<LeanDocument<ProductDocument>, 'inventory'>> {
     return this.productService.updateProductById(productId, product);
   }
 
