@@ -19,7 +19,11 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.FRONTEND_URL, // frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   app.setGlobalPrefix('api');
 
   // Initiate swagger for API documentation
@@ -28,13 +32,27 @@ async function bootstrap() {
     .setDescription(
       'API for handling CRUD operations for Shop Management System',
     )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'jwt-auth', // 👈 this is the key name
+    )
     .setVersion('1.0')
-    .addTag('shops')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('oas-docs', app, documentFactory);
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  // 🔥 THIS IS THE MAGIC LINE
+  document.security = [{ 'jwt-auth': [] }];
+  SwaggerModule.setup('docs', app, document);
 
   // expose 3001 port for APIs
-  await app.listen(process.env.PORT || 3001);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

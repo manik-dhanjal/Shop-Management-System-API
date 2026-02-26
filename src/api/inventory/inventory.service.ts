@@ -62,7 +62,7 @@ export class InventoryService {
 
     const createdInventory = await this.inventoryRepository.create({
       ...createInventoryDto,
-      measuringUnit: product.measuringUnit,
+      measuringUnit: createInventoryDto.measuringUnit || product.measuringUnit,
       shop: this.convertToMongoId(shopId),
     });
     await this.productRepository.updateOne(createInventoryDto.product, {

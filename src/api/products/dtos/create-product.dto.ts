@@ -16,6 +16,7 @@ import { ProductPropertyDto } from './product-property.dto';
 import { CreateInventoryDto } from '@api/inventory/dto/create-inventory.dto';
 import { OmitType } from '@nestjs/swagger';
 import { MeasuringUnit } from '../enum/measuring-unit.enum';
+import { Currency } from '@shared/enum/currency.enum';
 
 export default class CreateProductDto {
   @IsString()
@@ -82,4 +83,11 @@ export default class CreateProductDto {
 
   @IsEnum(MeasuringUnit)
   measuringUnit: MeasuringUnit;
+
+  @IsNumber()
+  @Min(0)
+  price: number; // Price of the product in the specified measuring unit
+
+  @IsEnum(Currency)
+  currency: Currency; // Currency of the product price
 }

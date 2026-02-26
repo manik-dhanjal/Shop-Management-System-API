@@ -4,6 +4,8 @@ import { Shop } from '@api/shop/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
 import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
 import { MeasuringUnit } from '../enum/measuring-unit.enum';
+import { Currency } from '@shared/enum/currency.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -90,6 +92,25 @@ export class Product {
     required: true,
   })
   measuringUnit: MeasuringUnit; // e.g., pcs, kg, liters
+
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  price: number; // Weight of the product in the specified measuring unit
+
+  @ApiProperty({
+    description: 'Currency of the product price',
+    example: 'USD',
+    required: true,
+    enum: Currency,
+  })
+  @Prop({
+    type: String,
+    enum: Object.values(Currency),
+    required: true,
+  })
+  currency: Currency;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

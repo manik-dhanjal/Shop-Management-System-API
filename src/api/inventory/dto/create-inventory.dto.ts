@@ -71,15 +71,6 @@ export class CreateInventoryDto {
   currentQuantity: number;
 
   @ApiProperty({
-    description: 'Unit of measurement for the inventory item',
-    example: 'kg',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  unit: string;
-
-  @ApiProperty({
     description: 'Invoice URL for the inventory item',
     example: 'https://example.com/invoice.pdf',
     required: true,
