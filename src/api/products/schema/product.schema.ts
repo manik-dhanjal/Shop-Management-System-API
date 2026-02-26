@@ -99,12 +99,6 @@ export class Product {
   })
   price: number; // Weight of the product in the specified measuring unit
 
-  @ApiProperty({
-    description: 'Currency of the product price',
-    example: 'USD',
-    required: true,
-    enum: Currency,
-  })
   @Prop({
     type: String,
     enum: Object.values(Currency),

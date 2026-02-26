@@ -10,6 +10,7 @@ import {
 import { Transform, Type } from 'class-transformer';
 import mongoose, { Types } from 'mongoose';
 import { MeasuringUnit } from '@api/products/enum/measuring-unit.enum';
+import { Currency } from '@shared/enum/currency.enum';
 
 export class CreateInventoryDto {
   @ApiProperty({
@@ -37,9 +38,9 @@ export class CreateInventoryDto {
     example: 'USD',
     required: true,
   })
-  @IsString()
+  @IsEnum(Currency)
   @IsNotEmpty()
-  currency: string;
+  currency: Currency;
 
   @ApiProperty({
     description: 'Supplier ID (Shop reference)',
