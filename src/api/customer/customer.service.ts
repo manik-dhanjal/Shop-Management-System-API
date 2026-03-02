@@ -81,6 +81,7 @@ export class CustomerService {
   ): Promise<PaginatedResponseDto<LeanDocument<CustomerDocument>>> {
     // Set default values for page and limit if not provided
     const skip = (query.page - 1) * query.limit;
+    console.log('Query filter:', query, this.repository);
     return this.repository.findWithPagination(
       {
         shop: shopId,

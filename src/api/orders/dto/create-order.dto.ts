@@ -35,15 +35,6 @@ export class CreateOrderDto {
   customer: string;
 
   @ApiProperty({
-    description: 'ID of the person who billed the order',
-    example: '60af8842c4562c001f3b7b45',
-    required: true,
-  })
-  @IsMongoId()
-  @IsNotEmpty()
-  billedBy: string;
-
-  @ApiProperty({
     description: 'Shop ID where the order was placed',
     example: '60af8842c4562c001f3b7b46',
     required: true,

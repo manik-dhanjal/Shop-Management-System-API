@@ -7,6 +7,7 @@ import { OrderModule } from './orders/order.module';
 import { CustomerModule } from './customer/customer.module';
 import { Inventory } from './inventory/schema/inventory.schema';
 import { InventoryModule } from './inventory/inventory.module';
+import { FormModule } from './form/form.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { InventoryModule } from './inventory/inventory.module';
     OrderModule,
     CustomerModule,
     InventoryModule,
+    FormModule,
   ],
   providers: [],
 })

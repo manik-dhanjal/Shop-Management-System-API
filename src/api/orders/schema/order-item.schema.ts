@@ -12,7 +12,7 @@ export class OrderItem {
     ref: Product.name,
     required: true,
   })
-  productId: Types.ObjectId;
+  product: Types.ObjectId;
 
   @Prop({
     type: Number,

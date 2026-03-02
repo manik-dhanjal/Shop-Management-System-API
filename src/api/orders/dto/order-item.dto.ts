@@ -19,7 +19,7 @@ export class OrderItemDto {
   })
   @IsNotEmpty()
   @IsMongoId()
-  productId: string;
+  product: string;
 
   //comment
   @ApiProperty({

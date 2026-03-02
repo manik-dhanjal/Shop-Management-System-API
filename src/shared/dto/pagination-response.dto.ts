@@ -7,12 +7,12 @@ export class PaginatedResponseDto<T> {
     description: 'Array of documents returned in the search results',
   })
   @IsArray()
-  readonly docs!: T[];
+  docs!: T[];
 
   @ApiProperty({
     description: 'Pagination metadata for the returned search results',
     type: PaginationMetadataDto,
   })
   @IsObject()
-  readonly pagination!: PaginationMetadataDto;
+  pagination!: PaginationMetadataDto;
 }

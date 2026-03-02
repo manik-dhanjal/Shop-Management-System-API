@@ -15,6 +15,7 @@ import { UserDocument } from '@api/user/schema/user.schema';
 import { UserRole } from '@api/user/enum/user-role.enum';
 import { PaginatedShopQuery } from './dto/paginated-shop-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
+import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 
 @Injectable()
 export class ShopService {
@@ -27,6 +28,13 @@ export class ShopService {
     if (!isObjectIdOrHexString(shopId))
       throw new NotFoundException('Invalid Shop ID');
     return this.repository.findOne({ _id: shopId }, {}, {}, ['suppliers']);
+  }
+
+  async getPaginatedSuppliers(
+    shopId: string,
+    query: PaginationQueryDto<UpdateShopDto>,
+  ): Promise<PaginatedResponseDto<LeanDocument<ShopDocument>>> {
+    return this.repository.getPaginatedSuppliers(shopId, query);
   }
 
   async getShops(): Promise<LeanDocument<ShopDocument>[]> {
