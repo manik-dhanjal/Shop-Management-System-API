@@ -13,6 +13,6 @@ import { UserModule } from '@api/user/user.module';
   ],
   controllers: [ShopController],
   providers: [ShopRepository, ShopService],
-  exports: [ShopService],
+  exports: [ShopService, ShopRepository],
 })
 export class ShopModule {}
