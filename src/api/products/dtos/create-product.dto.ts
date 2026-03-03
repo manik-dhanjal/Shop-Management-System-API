@@ -121,18 +121,22 @@ export default class CreateProductDto {
   @ApiProperty({ description: 'Unit of measurement', enum: MeasuringUnit })
   @IsEnum(MeasuringUnit)
   measuringUnit: MeasuringUnit;
-
-  @ApiProperty({ description: 'Price per unit', minimum: 0 })
+  @ApiProperty({ description: 'Purchase price per unit', minimum: 0 })
   @IsNumber()
   @Min(0)
-  price: number; // Price of the product in the specified measuring unit
+  purchasePrice: number; // Purchase price of the product per unit
+
+  @ApiProperty({ description: 'Selling price per unit', minimum: 0 })
+  @IsNumber()
+  @Min(0)
+  sellPrice: number; // Selling price of the product per unit
 
   @ApiProperty({
-    description: 'Currency of the product price',
+    description: 'Currency of the product prices',
     example: 'USD',
     required: true,
     enum: Currency,
   })
   @IsEnum(Currency)
-  currency: Currency; // Currency of the product price
+  currency: Currency; // Currency of the product prices
 }

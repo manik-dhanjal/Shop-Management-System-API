@@ -57,7 +57,6 @@ export class FormService implements OnModuleInit {
       shopId,
       payload.query,
     );
-    console.log('Fetched data for entity type:', entityType, a);
     const data = (await this.entityDataMap[entityType](
       shopId,
       payload.query,

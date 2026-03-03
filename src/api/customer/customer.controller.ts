@@ -6,15 +6,12 @@ import {
   Delete,
   Param,
   Body,
-  Query,
-  UseGuards,
-  Version,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
+import { PaginatedCustomerQueryDto } from './dto/paginated-customer-query.dto';
 
 @Controller({
   path: '/shop/:shopId/customer',
@@ -52,10 +49,10 @@ export class CustomerController {
     );
   }
 
-  @Get()
+  @Post('paginated')
   async getPaginatedCustomers(
     @Param('shopId') shopId: string,
-    @Query() query: PaginationQueryDto<CreateCustomerDto>,
+    @Body() query: PaginatedCustomerQueryDto,
   ): Promise<PaginatedResponseDto<any>> {
     return this.customerService.getPaginatedCustomer(shopId, query);
   }

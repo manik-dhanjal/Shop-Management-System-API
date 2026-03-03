@@ -50,15 +50,15 @@ export class CreateCustomerDto {
   @ValidateNested({ each: true })
   shippingAddress?: LocationDto;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description:
       'Billing address of the customer, used for invoicing and taxation.',
     type: LocationDto,
-    required: true,
   })
+  @IsOptional()
   @Type(() => LocationDto)
   @ValidateNested()
-  billingAddress: LocationDto;
+  billingAddress?: LocationDto;
 
   @ApiPropertyOptional({
     description:

@@ -9,8 +9,29 @@ import { LeanDocument } from '@shared/types/lean-document.interface';
 import { CustomerDocument } from './schema/customer.schema';
 import { isObjectIdOrHexString, Types } from 'mongoose';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
+import { PaginatedCustomerQueryDto } from './dto/paginated-customer-query.dto';
+import { buildSearchFilter } from '@shared/utils/search-filter.util';
+
+type CustomerSearchFields = {
+  name: string;
+  phone: string;
+  email?: string;
+  billingAddress?: {
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    pinCode: string;
+  };
+  shippingAddress?: {
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    pinCode: string;
+  };
+};
 
 @Injectable()
 export class CustomerService {
@@ -77,15 +98,35 @@ export class CustomerService {
 
   async getPaginatedCustomer(
     shopId: string,
-    query: PaginationQueryDto<CreateCustomerDto>,
+    query: PaginatedCustomerQueryDto,
   ): Promise<PaginatedResponseDto<LeanDocument<CustomerDocument>>> {
     // Set default values for page and limit if not provided
     const skip = (query.page - 1) * query.limit;
-    console.log('Query filter:', query, this.repository);
+
+    const searchFilter = buildSearchFilter<CustomerSearchFields>({
+      search: query.search,
+      includedFields: [
+        'name',
+        'phone',
+        'email',
+        'billingAddress.address',
+        'billingAddress.city',
+        'billingAddress.state',
+        'billingAddress.country',
+        'billingAddress.pinCode',
+        'shippingAddress.address',
+        'shippingAddress.city',
+        'shippingAddress.state',
+        'shippingAddress.country',
+        'shippingAddress.pinCode',
+      ],
+    });
+
     return this.repository.findWithPagination(
       {
         shop: shopId,
         ...query.filter,
+        ...searchFilter,
       },
       undefined,
       query.sort,

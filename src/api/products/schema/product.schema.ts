@@ -92,12 +92,17 @@ export class Product {
     required: true,
   })
   measuringUnit: MeasuringUnit; // e.g., pcs, kg, liters
+  @Prop({
+    type: Number,
+    required: true,
+  })
+  purchasePrice: number; // Purchase price of the product per unit
 
   @Prop({
     type: Number,
     required: true,
   })
-  price: number; // Weight of the product in the specified measuring unit
+  sellPrice: number; // Selling price of the product per unit
 
   @Prop({
     type: String,
