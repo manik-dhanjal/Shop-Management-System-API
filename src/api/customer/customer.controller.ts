@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Patch,
   Delete,
   Param,
@@ -26,6 +27,14 @@ export class CustomerController {
     @Body() createCustomerDto: CreateCustomerDto,
   ) {
     return this.customerService.createCustomer(shopId, createCustomerDto);
+  }
+
+  @Put()
+  async upsertCustomer(
+    @Param('shopId') shopId: string,
+    @Body() customerDto: CreateCustomerDto,
+  ) {
+    return this.customerService.upsertCustomerByPhone(shopId, customerDto);
   }
 
   @Get(':customerId')

@@ -41,8 +41,6 @@ export class CustomerService {
     shopId: string,
     customer: CreateCustomerDto,
   ): Promise<LeanDocument<CustomerDocument>> {
-    if (customer.shop != shopId) throw new UnauthorizedException();
-
     const existingCustomer = await this.repository.findOne(
       {
         phone: customer.phone,
@@ -58,7 +56,40 @@ export class CustomerService {
         `Customer with phone number ${customer.phone} already exists.`,
       );
     }
-    return this.repository.create(customer);
+    return this.repository.create({ ...customer, shop: shopId });
+  }
+
+  async upsertCustomerByPhone(
+    shopId: string,
+    customer: CreateCustomerDto,
+  ): Promise<LeanDocument<CustomerDocument>> {
+    const existingCustomer = await this.repository.findOne(
+      {
+        phone: customer.phone,
+        shop: shopId,
+      },
+      {},
+      {},
+      [],
+      true,
+    );
+
+    if (!existingCustomer) {
+      return this.repository.create({ ...customer, shop: shopId });
+    }
+
+    return this.repository.updateOne(new Types.ObjectId(existingCustomer._id), {
+      ...customer,
+      shop: shopId,
+      profileImage:
+        customer.profileImage || existingCustomer.profileImage || null,
+      shippingAddress:
+        customer.shippingAddress || existingCustomer.shippingAddress || null,
+      billingAddress:
+        customer.billingAddress || existingCustomer.billingAddress || null,
+      email: customer.email || existingCustomer.email || null,
+      gstin: customer.gstin || existingCustomer.gstin || null,
+    });
   }
 
   async getCustomerById(

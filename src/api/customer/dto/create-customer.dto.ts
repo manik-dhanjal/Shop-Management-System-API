@@ -18,13 +18,6 @@ export class CreateCustomerDto {
   @IsString()
   phone: string;
 
-  @ApiProperty({
-    description: 'Associated shop ID',
-    example: '60af8842c4562c001f3b7b44',
-  })
-  @IsMongoId()
-  shop: string;
-
   @ApiPropertyOptional({
     description: 'Customer email',
     example: 'john.doe@example.com',
@@ -57,7 +50,7 @@ export class CreateCustomerDto {
   })
   @IsOptional()
   @Type(() => LocationDto)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   billingAddress?: LocationDto;
 
   @ApiPropertyOptional({
