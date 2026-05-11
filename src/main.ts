@@ -19,8 +19,26 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  const allowedOrigins = (process.env.FRONTEND_URL || '')
+    .split(',')
+    .map((u) => u.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL, // frontend URL
+    origin: (origin, callback) => {
+      // allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      // allow any Vercel preview deployment for this project
+      const isVercelPreview =
+        /^https:\/\/shop-management-system[a-z0-9-]*\.vercel\.app$/.test(
+          origin,
+        );
+      if (isVercelPreview || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
