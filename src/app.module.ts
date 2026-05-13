@@ -16,13 +16,14 @@ import { UserModule } from '@api/user/user.module';
 import { RolesGuard } from '@shared/gaurd/roles.gaurd';
 import { gstConfig } from '@config/gst.config';
 import { GstModule } from '@api/gst/gst.module';
+import { aiConfig } from '@config/ai.config';
 
 @Module({
   imports: [
     ApiModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [smsDatabaseConfig, cloudinaryConfig, userConfig, gstConfig],
+      load: [smsDatabaseConfig, cloudinaryConfig, userConfig, gstConfig, aiConfig],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
