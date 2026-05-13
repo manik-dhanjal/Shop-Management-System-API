@@ -16,6 +16,8 @@ import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 import { OrderService } from './order.service';
 import { UserRole } from '@api/user/enum/user-role.enum';
 import { Roles } from '@shared/decorator/roles.decorator';
+import { CurrentUser } from '@shared/decorator/current-user.decorator';
+import { UserDocument } from '@api/user/schema/user.schema';
 
 @Controller({
   path: 'shop/:shopId/order',
@@ -29,8 +31,17 @@ export class OrderController {
   async create(
     @Param('shopId') shopId: string,
     @Body() createOrderDto: CreateOrderDto,
+    @CurrentUser() user: UserDocument,
   ): Promise<LeanDocument<OrderDocument>> {
-    return this.orderService.createOrder(shopId, createOrderDto);
+    return this.orderService.createOrder(shopId, createOrderDto, user);
+  }
+
+  @Get('invoice-id/next')
+  async previewInvoiceId(
+    @Param('shopId') shopId: string,
+  ): Promise<{ invoiceId: string }> {
+    const invoiceId = await this.orderService.previewInvoiceId(shopId);
+    return { invoiceId };
   }
 
   @Post('paginated')
@@ -47,6 +58,14 @@ export class OrderController {
     @Param('id') id: string,
   ): Promise<LeanDocument<OrderDocument>> {
     return this.orderService.getOrderById(shopId, id);
+  }
+
+  @Get(':id/populated')
+  async findOnePopulated(
+    @Param('shopId') shopId: string,
+    @Param('id') id: string,
+  ): Promise<LeanDocument<OrderDocument>> {
+    return this.orderService.getOrderByIdPopulated(shopId, id);
   }
 
   @Put(':id')

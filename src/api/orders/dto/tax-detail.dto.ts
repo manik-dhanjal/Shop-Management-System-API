@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { TaxType } from '../enum/tax-type.enum';
 
 export class TaxDetailDto {
@@ -17,7 +17,7 @@ export class TaxDetailDto {
     example: 9.0,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   @IsNotEmpty()
   rate: number;
 
@@ -26,7 +26,7 @@ export class TaxDetailDto {
     example: 45.0,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   @IsNotEmpty()
   amount: number;
 }

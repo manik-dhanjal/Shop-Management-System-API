@@ -9,7 +9,6 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -17,18 +16,18 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop":true,
+    "esModuleInterop": true,
     "paths": {
-      "@mocks/*": ["test/__mocks__/*"],
-      "@test/*": ["test/*"],
-      "@core/*": ["src/shared/core/*"],
-      "@config/*": ["src/shared/config/*"],
-      "@guards/*": ["src/shared/guards/*"],
-      "@middlewares/*": ["src/shared/middlewares/*"],
-      "@modules/*": ["src/shared/modules/*"],
-      "@shared/*": ["src/shared/*"],
-      "@api/*": ["src/api/*"],
-      "@root/*": ["src/*"]
+      "@mocks/*": ["./test/__mocks__/*"],
+      "@test/*": ["./test/*"],
+      "@core/*": ["./src/shared/core/*"],
+      "@config/*": ["./src/shared/config/*"],
+      "@guards/*": ["./src/shared/guards/*"],
+      "@middlewares/*": ["./src/shared/middlewares/*"],
+      "@modules/*": ["./src/shared/modules/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@api/*": ["./src/api/*"],
+      "@root/*": ["./src/*"]
     }
   }
 }

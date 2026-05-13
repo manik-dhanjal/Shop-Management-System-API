@@ -2,7 +2,7 @@ import {
   IsArray,
   IsNumber,
   IsOptional,
-  IsPositive,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -15,12 +15,12 @@ export class BillingDetailsDto {
     example: 3000.0,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   subTotal: number;
 
   @ApiProperty({ description: 'Total discounts applied', example: 100.0 })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   discounts: number;
 
   @ApiPropertyOptional({
@@ -38,12 +38,11 @@ export class BillingDetailsDto {
     example: 3161.5,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   grandTotal: number;
 
   @ApiProperty({ description: 'Round-off adjustment', example: 0.5 })
   @IsNumber()
-  @IsPositive()
   roundOff: number;
 
   @ApiProperty({
@@ -51,6 +50,6 @@ export class BillingDetailsDto {
     example: 3161.0,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   finalAmount: number;
 }

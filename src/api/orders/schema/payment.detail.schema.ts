@@ -1,10 +1,9 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { PaymentMethod } from '../enum/payment-method.enum';
 import { PaymentStatus } from '../enum/payment-status.enum';
 
-@Schema({ timestamps: true })
-export class PaymentDetails extends Document {
+@Schema({ _id: false })
+export class PaymentDetails {
   @Prop({ type: String, enum: PaymentMethod, required: true })
   paymentMethod: PaymentMethod;
 

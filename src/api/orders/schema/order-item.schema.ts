@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Product } from 'src/api/products/schema/product.schema';
+import { Product } from '@api/products/schema/product.schema';
 import mongoose, { Types } from 'mongoose';
 import { TaxDetail, TaxDetailSchema } from './tax-detail.schema';
 

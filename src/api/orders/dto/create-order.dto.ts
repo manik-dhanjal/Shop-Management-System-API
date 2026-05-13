@@ -16,14 +16,14 @@ import { PaymentDetailsDto } from './payment-details.dto';
 import { BillingDetailsDto } from './billing-details.dto';
 
 export class CreateOrderDto {
-  @ApiProperty({
-    description: 'Unique Invoice number',
-    example: 'ORD123456',
-    required: true,
+  @ApiPropertyOptional({
+    description:
+      'Unique Invoice number. Auto-generated server-side if omitted.',
+    example: 'INV/25-26/0014',
   })
   @IsString()
-  @IsNotEmpty()
-  invoiceId: string;
+  @IsOptional()
+  invoiceId?: string;
 
   @ApiProperty({
     description: 'Customer ID',
@@ -88,13 +88,12 @@ export class CreateOrderDto {
   @Type(() => PaymentDetailsDto)
   payment: PaymentDetailsDto;
 
-  @ApiProperty({
-    description: 'Order placement date and time',
+  @ApiPropertyOptional({
+    description: 'Order placement date and time (defaults to now)',
     example: '2024-03-01T10:30:00.000Z',
-    required: true,
   })
+  @IsOptional()
   @IsDate()
-  @IsNotEmpty()
   @Type(() => Date)
-  createdAt: Date;
+  orderDate?: Date;
 }

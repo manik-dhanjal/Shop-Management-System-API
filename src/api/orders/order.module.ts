@@ -1,16 +1,32 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schema/order.schema';
+import {
+  InvoiceCounter,
+  InvoiceCounterSchema,
+} from './schema/invoice-counter.schema';
 import { OrderController } from './order.controller';
 import { OrderRepository } from './repository/order.repository';
 import { OrderService } from './order.service';
+import { InvoiceCounterRepository } from './repository/invoice-counter.repository';
+import { InvoiceNumberService } from './invoice-number.service';
+import { ProductsModule } from '@api/products/product.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    MongooseModule.forFeature([
+      { name: Order.name, schema: OrderSchema },
+      { name: InvoiceCounter.name, schema: InvoiceCounterSchema },
+    ]),
+    ProductsModule,
   ],
   controllers: [OrderController],
-  providers: [OrderRepository, OrderService],
+  providers: [
+    OrderRepository,
+    OrderService,
+    InvoiceCounterRepository,
+    InvoiceNumberService,
+  ],
   exports: [OrderService],
 })
 export class OrderModule {}

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   Logger,
   NotFoundException,
@@ -101,5 +102,59 @@ export class ProductService {
       throw new NotFoundException('Invalid Shop ID');
     const productId = new mongoose.Types.ObjectId(id);
     await this.repository.deleteOne(productId);
+  }
+
+  /**
+   * Validates stock and decrements it atomically for an order line set.
+   * Uses a conditional $inc per product so a concurrent order cannot oversell.
+   * If any product fails the stock check, previously decremented products are rolled back.
+   */
+  async assertAndDecrementStock(
+    shopId: string,
+    lines: { productId: string; quantity: number }[],
+  ): Promise<void> {
+    if (!lines.length) {
+      throw new BadRequestException('Order must contain at least one item');
+    }
+    const succeeded: { productId: string; quantity: number }[] = [];
+    for (const line of lines) {
+      if (!isObjectIdOrHexString(line.productId)) {
+        await this.rollbackStock(succeeded);
+        throw new BadRequestException(`Invalid product id ${line.productId}`);
+      }
+      if (line.quantity <= 0) {
+        await this.rollbackStock(succeeded);
+        throw new BadRequestException('Quantity must be positive');
+      }
+      const result = await this.repository.model.findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(line.productId),
+          shop: new Types.ObjectId(shopId),
+          stock: { $gte: line.quantity },
+        },
+        { $inc: { stock: -line.quantity } },
+        { new: true },
+      );
+      if (!result) {
+        await this.rollbackStock(succeeded);
+        throw new BadRequestException(
+          `Insufficient stock for product ${line.productId}`,
+        );
+      }
+      succeeded.push(line);
+    }
+  }
+
+  private async rollbackStock(
+    lines: { productId: string; quantity: number }[],
+  ): Promise<void> {
+    await Promise.all(
+      lines.map((l) =>
+        this.repository.model.updateOne(
+          { _id: new Types.ObjectId(l.productId) },
+          { $inc: { stock: l.quantity } },
+        ),
+      ),
+    );
   }
 }

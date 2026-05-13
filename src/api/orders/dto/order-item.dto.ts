@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsPositive,
+  Min,
   ValidateNested,
   IsArray,
 } from 'class-validator';
@@ -39,7 +40,7 @@ export class OrderItemDto {
   })
   @IsOptional()
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   discount?: number;
 
   @ApiProperty({
@@ -47,7 +48,7 @@ export class OrderItemDto {
     example: 1550.0,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   @IsNotEmpty()
   taxableValue: number;
 
@@ -65,7 +66,7 @@ export class OrderItemDto {
     example: 418.0,
   })
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   @IsNotEmpty()
   totalPrice: number;
 }

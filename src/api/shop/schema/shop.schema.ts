@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Location } from 'src/shared/schema/location.schema';
+import { Location } from '@shared/schema/location.schema';
 import { GstDetails } from './gst-details.schema';
 
 export type ShopDocument = HydratedDocument<Shop>;

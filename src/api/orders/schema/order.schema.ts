@@ -58,6 +58,9 @@ export class Order {
 
   @Prop({ type: PaymentDetailsSchema, required: true })
   payment: PaymentDetails;
+
+  @Prop({ type: Date, required: true, default: () => new Date() })
+  orderDate: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
