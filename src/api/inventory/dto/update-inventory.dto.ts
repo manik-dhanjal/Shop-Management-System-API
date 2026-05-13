@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateInventoryDto } from './create-inventory.dto';
-import { IsMongoId, IsString } from 'class-validator';
+import { IsMongoId } from 'class-validator';
 
 export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {
   @ApiProperty({

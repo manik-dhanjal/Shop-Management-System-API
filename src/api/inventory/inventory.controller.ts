@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
-import { update } from 'lodash';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
-import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedInventoryQueryDto } from './dto/paginated-inventory-query.dto';
 
 @Controller({

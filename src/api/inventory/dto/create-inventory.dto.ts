@@ -7,8 +7,8 @@ import {
   IsPositive,
   IsString,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import mongoose, { Types } from 'mongoose';
+import { Type } from 'class-transformer';
+import mongoose from 'mongoose';
 import { MeasuringUnit } from '@api/products/enum/measuring-unit.enum';
 import { Currency } from '@shared/enum/currency.enum';
 

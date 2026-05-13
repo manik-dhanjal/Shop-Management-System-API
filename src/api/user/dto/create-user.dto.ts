@@ -7,7 +7,6 @@ import {
   IsOptional,
   IsString,
   Length,
-  Matches,
   ValidateNested,
 } from 'class-validator';
 import { ShopMetaDto } from './shop-meta.dto';

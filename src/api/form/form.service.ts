@@ -12,9 +12,14 @@ import { CustomerService } from '@api/customer/customer.service';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 import { LeanDocument } from '@shared/types/lean-document.interface';
 
+type EntityFetcher = (
+  shopId: string,
+  query: any,
+) => Promise<PaginatedResponseDto<LeanDocument<unknown>>>;
+
 @Injectable()
 export class FormService implements OnModuleInit {
-  private entityDataMap: Record<string, Function>;
+  private entityDataMap: Record<string, EntityFetcher>;
   constructor(
     private readonly orderService: OrderService,
     private readonly productService: ProductService,
@@ -53,10 +58,6 @@ export class FormService implements OnModuleInit {
       );
     }
 
-    const a = await this.customerService.getPaginatedCustomer(
-      shopId,
-      payload.query,
-    );
     const data = (await this.entityDataMap[entityType](
       shopId,
       payload.query,

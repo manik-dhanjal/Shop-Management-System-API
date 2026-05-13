@@ -70,7 +70,7 @@ export class GSTPublicClient extends BaseGstClient {
   /**
    * Fetch details of the URD for e-commerce supplier.
    */
-  async getUnregisteredApplicants(uid: string, email: string, ipAddr: string) {
+  async getUnregisteredApplicants(uid: string, email: string) {
     const { ipAddress } = this.configService.get<GstConfig>(GST_CONFIG_NAME);
     if (!ipAddress) {
       throw new Error('IP address is not configured in GST settings');

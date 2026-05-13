@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, mongo } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Shop } from '@api/shop/schema/shop.schema';
 import { ProductProperty } from './product-property.schema';
 import { MediaMetadata } from '@api/media-storage/schema/media-metadata.schema';
 import { MeasuringUnit } from '../enum/measuring-unit.enum';
 import { Currency } from '@shared/enum/currency.enum';
-import { ApiProperty } from '@nestjs/swagger';
 
 export type ProductDocument = HydratedDocument<Product>;
 

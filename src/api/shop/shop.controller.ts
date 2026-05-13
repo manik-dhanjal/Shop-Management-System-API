@@ -5,11 +5,10 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   Request,
 } from '@nestjs/common';
 import { LeanDocument } from '@shared/types/lean-document.interface';
-import { Shop, ShopDocument } from './schema/shop.schema';
+import { ShopDocument } from './schema/shop.schema';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { ShopService } from './shop.service';
 import { UpdateShopDto } from './dto/update-shop.dto';

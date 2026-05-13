@@ -1,5 +1,4 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, Schema } from '@nestjs/mongoose';
 
 export enum GstStatus {
   ACTIVE = 'Active',

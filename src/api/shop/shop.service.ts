@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ShopRepository } from './repository/shops.repository';
 import { LeanDocument } from '@shared/types/lean-document.interface';
-import { Shop, ShopDocument } from './schema/shop.schema';
+import { ShopDocument } from './schema/shop.schema';
 import { CreateShopDto } from './dto/create-shop.dto';
 import mongoose, { isObjectIdOrHexString } from 'mongoose';
 import { UpdateShopDto } from './dto/update-shop.dto';

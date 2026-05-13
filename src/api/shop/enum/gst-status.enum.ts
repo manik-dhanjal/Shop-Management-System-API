@@ -1,4 +1,4 @@
-enum GstStatus {
+export enum GstStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   CANCELLED = 'CANCELLED',

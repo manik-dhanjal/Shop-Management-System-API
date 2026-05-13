@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import { Shop } from '@api/shop/schema/shop.schema';
 import { MeasuringUnit } from '@api/products/enum/measuring-unit.enum';
 
@@ -19,7 +19,7 @@ export class Inventory {
     type: Number,
     required: true,
   })
-  sellPrice: Number;
+  sellPrice: number;
 
   @Prop({
     type: String,

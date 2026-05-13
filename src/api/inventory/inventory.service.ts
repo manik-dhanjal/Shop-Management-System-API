@@ -9,12 +9,10 @@ import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { isMongoId } from 'class-validator';
 import mongoose, { Types } from 'mongoose';
-import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 import { LeanDocument } from '@shared/types/lean-document.interface';
 import { InventoryDocument } from './schema/inventory.schema';
 import { ProductRepository } from '@api/products/repository/product.repository';
-import { MeasuringUnit } from '@api/products/enum/measuring-unit.enum';
 import { PaginatedInventoryQueryDto } from './dto/paginated-inventory-query.dto';
 
 @Injectable()
