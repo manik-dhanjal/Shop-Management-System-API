@@ -13,6 +13,8 @@ import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 import { PaginatedCustomerQueryDto } from './dto/paginated-customer-query.dto';
+import { CurrentUser } from '@shared/decorator/current-user.decorator';
+import { UserDocument } from '@api/user/schema/user.schema';
 
 @Controller({
   path: '/shop/:shopId/customer',
@@ -25,16 +27,31 @@ export class CustomerController {
   async createCustomer(
     @Param('shopId') shopId: string,
     @Body() createCustomerDto: CreateCustomerDto,
+    @CurrentUser() user: UserDocument,
   ) {
-    return this.customerService.createCustomer(shopId, createCustomerDto);
+    return this.customerService.createCustomer(shopId, createCustomerDto, user);
   }
 
   @Put()
   async upsertCustomer(
     @Param('shopId') shopId: string,
     @Body() customerDto: CreateCustomerDto,
+    @CurrentUser() user: UserDocument,
   ) {
-    return this.customerService.upsertCustomerByPhone(shopId, customerDto);
+    return this.customerService.upsertCustomerByPhone(
+      shopId,
+      customerDto,
+      user,
+    );
+  }
+
+  @Get('code/next')
+  async previewCustomerCode(
+    @Param('shopId') shopId: string,
+  ): Promise<{ customerCode: string }> {
+    const customerCode =
+      await this.customerService.peekNextCustomerCode(shopId);
+    return { customerCode };
   }
 
   @Get(':customerId')
@@ -50,11 +67,13 @@ export class CustomerController {
     @Param('shopId') shopId: string,
     @Param('customerId') customerId: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
+    @CurrentUser() user: UserDocument,
   ) {
     return this.customerService.updateCustomer(
       shopId,
       customerId,
       updateCustomerDto,
+      user,
     );
   }
 
@@ -70,7 +89,8 @@ export class CustomerController {
   async deleteCustomer(
     @Param('shopId') shopId: string,
     @Param('customerId') customerId: string,
+    @CurrentUser() user: UserDocument,
   ) {
-    return this.customerService.deleteCustomer(shopId, customerId);
+    return this.customerService.deleteCustomer(shopId, customerId, user);
   }
 }

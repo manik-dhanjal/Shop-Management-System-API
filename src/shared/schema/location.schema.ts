@@ -10,6 +10,13 @@ export class Location {
   })
   address: string;
 
+  /** Optional second address line (suite, building, etc.) */
+  @Prop({
+    type: String,
+    required: false,
+  })
+  addressLine2?: string;
+
   @Prop({
     type: String,
     required: true,
@@ -21,6 +28,16 @@ export class Location {
     required: true,
   })
   state: string;
+
+  /**
+   * 2-digit Indian GST state code (e.g. "27" for Maharashtra).
+   * Drives place-of-supply / intra-vs-inter-state determination on Tax Invoices.
+   */
+  @Prop({
+    type: String,
+    required: false,
+  })
+  stateCode?: string;
 
   @Prop({
     type: String,

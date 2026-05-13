@@ -11,6 +11,7 @@ import { OrderService } from './order.service';
 import { InvoiceCounterRepository } from './repository/invoice-counter.repository';
 import { InvoiceNumberService } from './invoice-number.service';
 import { ProductsModule } from '@api/products/product.module';
+import { CustomerModule } from '@api/customer/customer.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProductsModule } from '@api/products/product.module';
       { name: InvoiceCounter.name, schema: InvoiceCounterSchema },
     ]),
     ProductsModule,
+    CustomerModule,
   ],
   controllers: [OrderController],
   providers: [

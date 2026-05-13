@@ -14,6 +14,7 @@ import { Types } from 'mongoose';
 import { InvoiceNumberService } from './invoice-number.service';
 import { ProductService } from '@api/products/product.service';
 import { UserDocument } from '@api/user/schema/user.schema';
+import { CustomerService } from '@api/customer/customer.service';
 
 @Injectable()
 export class OrderService {
@@ -21,6 +22,7 @@ export class OrderService {
     private readonly orderRepository: OrderRepository,
     private readonly invoiceNumberService: InvoiceNumberService,
     private readonly productService: ProductService,
+    private readonly customerService: CustomerService,
   ) {}
 
   async createOrder(
@@ -42,11 +44,27 @@ export class OrderService {
       createOrderDto.invoiceId ||
       (await this.invoiceNumberService.generate(shopId));
 
-    return this.orderRepository.create({
+    const created = await this.orderRepository.create({
       ...createOrderDto,
       invoiceId,
       billedBy: user._id,
     });
+
+    // Best-effort: bump denormalized customer stats. We don't fail the order if
+    // this hook errors — the order is the source of truth, stats can be
+    // recomputed later from order history.
+    try {
+      await this.customerService.onOrderCreated(
+        createOrderDto.customer,
+        createOrderDto.billing.finalAmount ?? 0,
+        createOrderDto.payment.amountPaid ?? 0,
+        createOrderDto.orderDate ?? new Date(),
+      );
+    } catch {
+      /* swallow */
+    }
+
+    return created;
   }
 
   async previewInvoiceId(shopId: string): Promise<string> {
