@@ -104,6 +104,65 @@ export class ProductService {
     await this.repository.deleteOne(productId);
   }
 
+  async getShopProductStats(shopId: string): Promise<{
+    totalProducts: number;
+    totalStock: number;
+    outOfStockCount: number;
+    totalInventoryValue: number;
+  }> {
+    const result = await this.repository.model
+      .aggregate<{
+        totalProducts: number;
+        totalStock: number;
+        outOfStockCount: number;
+        totalInventoryValue: number;
+      }>([
+        {
+          $match: {
+            shop: new Types.ObjectId(shopId),
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalProducts: { $sum: 1 },
+            totalStock: { $sum: { $ifNull: ['$stock', 0] } },
+            outOfStockCount: {
+              $sum: {
+                $cond: [{ $lte: [{ $ifNull: ['$stock', 0] }, 0] }, 1, 0],
+              },
+            },
+            totalInventoryValue: {
+              $sum: {
+                $multiply: [
+                  { $ifNull: ['$stock', 0] },
+                  { $ifNull: ['$purchasePrice', 0] },
+                ],
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            totalProducts: 1,
+            totalStock: 1,
+            outOfStockCount: 1,
+            totalInventoryValue: 1,
+          },
+        },
+      ])
+      .exec();
+
+    const stats = result[0];
+    return {
+      totalProducts: stats?.totalProducts ?? 0,
+      totalStock: stats?.totalStock ?? 0,
+      outOfStockCount: stats?.outOfStockCount ?? 0,
+      totalInventoryValue: stats?.totalInventoryValue ?? 0,
+    };
+  }
+
   /**
    * Validates stock and decrements it atomically for an order line set.
    * Uses a conditional $inc per product so a concurrent order cannot oversell.

@@ -22,6 +22,11 @@ import { UserRole } from '@api/user/enum/user-role.enum';
 export class ProductsController {
   constructor(private readonly productService: ProductService) {}
 
+  @Get('stats')
+  async getProductStats(@Param('shopId') shopId: string) {
+    return this.productService.getShopProductStats(shopId);
+  }
+
   @Get(':productId')
   async getProduct(
     @Param('productId') productId: string,

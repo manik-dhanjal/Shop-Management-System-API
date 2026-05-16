@@ -102,6 +102,38 @@ export class OrderService {
     );
   }
 
+  async getOrderStats(shopId: string) {
+    const result = await this.orderRepository
+      .getModelInstance()
+      .aggregate([
+        { $match: { shop: new Types.ObjectId(shopId) } },
+        {
+          $group: {
+            _id: null,
+            totalOrders: { $sum: 1 },
+            totalBilled: { $sum: '$billing.finalAmount' },
+            totalPaid: { $sum: '$payment.amountPaid' },
+            outstanding: {
+              $sum: {
+                $subtract: ['$billing.finalAmount', '$payment.amountPaid'],
+              },
+            },
+            avgOrderValue: { $avg: '$billing.finalAmount' },
+          },
+        },
+      ])
+      .exec();
+
+    const stats = result[0];
+    return {
+      totalOrders: stats?.totalOrders ?? 0,
+      totalBilled: stats?.totalBilled ?? 0,
+      totalPaid: stats?.totalPaid ?? 0,
+      outstanding: stats?.outstanding ?? 0,
+      avgOrderValue: stats?.avgOrderValue ?? 0,
+    };
+  }
+
   async updateOrder(
     shopId: string,
     orderId: string,

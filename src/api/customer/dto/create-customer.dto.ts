@@ -12,7 +12,7 @@ import {
   IsEmail,
   IsDateString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { LocationDto } from '@shared/dto/location.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CustomerType } from '../enum/customer-type.enum';
@@ -41,6 +41,7 @@ export class ContactPersonDto {
   phone?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsEmail()
   email?: string;
@@ -97,6 +98,7 @@ export class CreateCustomerDto {
     description: 'Customer email',
     example: 'john.doe@example.com',
   })
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsEmail()
   email?: string;
@@ -142,6 +144,7 @@ export class CreateCustomerDto {
     description: 'GSTIN — required for REGULAR/COMPOSITION/SEZ_*',
     example: '27AAACX1234B1Z1',
   })
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsString()
   @Matches(GSTIN_REGEX, { message: 'Invalid GSTIN format' })
@@ -151,6 +154,7 @@ export class CreateCustomerDto {
     description: 'PAN — auto-derived from GSTIN[2..12] when GSTIN is present',
     example: 'AAACX1234B',
   })
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsString()
   @Matches(PAN_REGEX, { message: 'Invalid PAN format' })
@@ -160,6 +164,7 @@ export class CreateCustomerDto {
     description: '2-digit Indian state code for place of supply',
     example: '27',
   })
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsString()
   @Matches(/^[0-9]{2}$/, { message: 'State code must be 2 digits' })

@@ -52,6 +52,11 @@ export class OrderController {
     return this.orderService.getPaginatedOrders(shopId, query);
   }
 
+  @Get('stats')
+  async getOrderStats(@Param('shopId') shopId: string) {
+    return this.orderService.getOrderStats(shopId);
+  }
+
   @Get(':id')
   async findOne(
     @Param('shopId') shopId: string,
