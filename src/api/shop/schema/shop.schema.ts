@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { Location } from '@shared/schema/location.schema';
 import { GstDetails } from './gst-details.schema';
 import { ShopKind } from '../enum/shop-kind.enum';
