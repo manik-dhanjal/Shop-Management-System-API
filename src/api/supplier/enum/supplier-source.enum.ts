@@ -1,0 +1,8 @@
+export enum SupplierSource {
+  REFERRAL = 'REFERRAL',
+  ONLINE = 'ONLINE',
+  CAMPAIGN = 'CAMPAIGN',
+  EXISTING = 'EXISTING',
+  TRADE_SHOW = 'TRADE_SHOW',
+  COLD_CONTACT = 'COLD_CONTACT',
+}

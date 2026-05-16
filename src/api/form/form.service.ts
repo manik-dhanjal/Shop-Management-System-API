@@ -7,8 +7,8 @@ import {
 import { GetDropdownOptionsDto } from './dto/get-dropdown-options.dto';
 import { OrderService } from '@api/orders/order.service';
 import { ProductService } from '@api/products/product.service';
-import { ShopService } from '@api/shop/shop.service';
 import { CustomerService } from '@api/customer/customer.service';
+import { SupplierService } from '@api/supplier/supplier.service';
 import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
 import { LeanDocument } from '@shared/types/lean-document.interface';
 
@@ -23,22 +23,23 @@ export class FormService implements OnModuleInit {
   constructor(
     private readonly orderService: OrderService,
     private readonly productService: ProductService,
-    private readonly shopService: ShopService,
+    private readonly supplierService: SupplierService,
     @Inject()
     private readonly customerService: CustomerService,
   ) {}
 
   onModuleInit() {
     this.entityDataMap = {
-      // Define entity type mappings and their corresponding data
-      order: this.orderService.getPaginatedOrders.bind(this.orderService), // Example: Fetch all orders
+      order: this.orderService.getPaginatedOrders.bind(this.orderService),
       product: this.productService.getPaginatedProducts.bind(
         this.productService,
-      ), // Example: Fetch all products
-      supplier: this.shopService.getPaginatedSuppliers.bind(this.shopService), // Example: Fetch all shops
+      ),
+      supplier: this.supplierService.getPaginatedSuppliers.bind(
+        this.supplierService,
+      ),
       customer: this.customerService.getPaginatedCustomer.bind(
         this.customerService,
-      ), // Example: Fetch all customers
+      ),
     };
   }
   /**

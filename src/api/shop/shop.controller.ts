@@ -14,8 +14,6 @@ import { ShopService } from './shop.service';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { Roles } from '@shared/decorator/roles.decorator';
 import { UserRole } from '@api/user/enum/user-role.enum';
-import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
-import { PaginatedShopQuery } from './dto/paginated-shop-query.dto';
 
 @Controller({ path: 'shop', version: '1' })
 export class ShopController {
@@ -44,14 +42,5 @@ export class ShopController {
     @Body() updatedShop: UpdateShopDto,
   ): Promise<LeanDocument<ShopDocument>> {
     return this.service.updateShop(shopId, updatedShop);
-  }
-
-  @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
-  @Post(':shopId/suppliers')
-  async getSuppliers(
-    @Param('shopId') shopId: string,
-    @Body() query: PaginatedShopQuery,
-  ): Promise<PaginatedResponseDto<LeanDocument<ShopDocument>>> {
-    return this.service.getSuppliers(shopId, query);
   }
 }

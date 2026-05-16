@@ -13,9 +13,6 @@ import { omit } from 'lodash';
 import { UserService } from '@api/user/user.service';
 import { UserDocument } from '@api/user/schema/user.schema';
 import { UserRole } from '@api/user/enum/user-role.enum';
-import { PaginatedShopQuery } from './dto/paginated-shop-query.dto';
-import { PaginatedResponseDto } from '@shared/dto/pagination-response.dto';
-import { PaginationQueryDto } from '@shared/dto/pagination-query.dto';
 
 @Injectable()
 export class ShopService {
@@ -27,14 +24,9 @@ export class ShopService {
   async getShopById(shopId: string): Promise<LeanDocument<ShopDocument>> {
     if (!isObjectIdOrHexString(shopId))
       throw new NotFoundException('Invalid Shop ID');
-    return this.repository.findOne({ _id: shopId }, {}, {}, ['suppliers']);
-  }
-
-  async getPaginatedSuppliers(
-    shopId: string,
-    query: PaginationQueryDto<UpdateShopDto>,
-  ): Promise<PaginatedResponseDto<LeanDocument<ShopDocument>>> {
-    return this.repository.getPaginatedSuppliers(shopId, query);
+    // suppliers[] is intentionally NOT populated here — it can grow large.
+    // Use the supplier endpoints for paginated supplier access.
+    return this.repository.findOne({ _id: shopId });
   }
 
   async getShops(): Promise<LeanDocument<ShopDocument>[]> {
@@ -66,29 +58,5 @@ export class ShopService {
     }
     const targetId = new mongoose.Types.ObjectId(shopId);
     return this.repository.updateOne(targetId, omit(updatedShop, '_id'));
-  }
-
-  async getSuppliers(
-    shopId: string,
-    query: PaginatedShopQuery,
-  ): Promise<PaginatedResponseDto<LeanDocument<ShopDocument>>> {
-    const shop = await this.repository.find({ _id: shopId }, { suppliers: 1 });
-
-    if (!shop || shop.length === 0) {
-      throw new NotFoundException('Shop not found');
-    }
-    const skip = (query.page - 1) * query.limit;
-    return this.repository.findWithPagination(
-      {
-        ...query.filter,
-        _id: {
-          $in: shop[0].suppliers,
-        },
-      },
-      {},
-      query.sort,
-      skip,
-      query.limit,
-    );
   }
 }

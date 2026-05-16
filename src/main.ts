@@ -28,12 +28,19 @@ async function bootstrap() {
     origin: (origin, callback) => {
       // allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
-      // allow any Vercel preview deployment for this project
+      // local dev — any http(s)://localhost(:port)? or 127.0.0.1
+      const isLocalhost =
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+      // any Vercel preview deployment for this project
       const isVercelPreview =
         /^https:\/\/shop-management-system[a-z0-9-]*\.vercel\.app$/.test(
           origin,
         );
-      if (isVercelPreview || allowedOrigins.includes(origin)) {
+      if (
+        isLocalhost ||
+        isVercelPreview ||
+        allowedOrigins.includes(origin)
+      ) {
         callback(null, true);
       } else {
         callback(new Error(`Origin ${origin} not allowed by CORS`));

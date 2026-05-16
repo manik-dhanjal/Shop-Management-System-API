@@ -7,6 +7,7 @@ import { OrderModule } from './orders/order.module';
 import { CustomerModule } from './customer/customer.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { FormModule } from './form/form.module';
+import { SupplierModule } from './supplier/supplier.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FormModule } from './form/form.module';
     CustomerModule,
     InventoryModule,
     FormModule,
+    SupplierModule,
   ],
   providers: [],
 })

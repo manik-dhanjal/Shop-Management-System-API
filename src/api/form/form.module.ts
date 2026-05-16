@@ -5,9 +5,16 @@ import { OrderModule } from '@api/orders/order.module';
 import { ProductsModule } from '@api/products/product.module';
 import { CustomerModule } from '@api/customer/customer.module';
 import { ShopModule } from '@api/shop/shop.module';
+import { SupplierModule } from '@api/supplier/supplier.module';
 
 @Module({
-  imports: [OrderModule, ProductsModule, CustomerModule, ShopModule],
+  imports: [
+    OrderModule,
+    ProductsModule,
+    CustomerModule,
+    ShopModule,
+    SupplierModule,
+  ],
   controllers: [FormController],
   providers: [FormService],
 })
