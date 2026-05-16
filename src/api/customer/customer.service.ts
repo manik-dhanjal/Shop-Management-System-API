@@ -128,6 +128,67 @@ export class CustomerService {
     return this.codeService.peek(shopId);
   }
 
+  /**
+   * Shop-wide customer KPIs used by the All Customers page header cards.
+   * Single aggregation so the response stays O(1) requests regardless of
+   * pagination state.
+   */
+  async getShopCustomerStats(shopId: string): Promise<{
+    totalCustomers: number;
+    activeCustomers: number;
+    withGstin: number;
+    totalOutstanding: number;
+  }> {
+    const result = await this.repository.model
+      .aggregate<{
+        totalCustomers: number;
+        activeCustomers: number;
+        withGstin: number;
+        totalOutstanding: number;
+      }>([
+        {
+          $match: {
+            shop: new Types.ObjectId(shopId),
+            isDeleted: { $ne: true },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalCustomers: { $sum: 1 },
+            activeCustomers: {
+              $sum: { $cond: [{ $eq: ['$status', 'ACTIVE'] }, 1, 0] },
+            },
+            withGstin: {
+              $sum: { $cond: [{ $eq: [{ $type: '$gstin' }, 'string' ] }, 1, 0] },
+            },
+            totalOutstanding: {
+              $sum: { $ifNull: ['$stats.outstandingBalance', 0] },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            totalCustomers: 1,
+            activeCustomers: 1,
+            withGstin: 1,
+            totalOutstanding: 1,
+          },
+        },
+      ])
+      .exec();
+
+    return (
+      result[0] ?? {
+        totalCustomers: 0,
+        activeCustomers: 0,
+        withGstin: 0,
+        totalOutstanding: 0,
+      }
+    );
+  }
+
   async getPaginatedCustomer(
     shopId: string,
     query: PaginatedCustomerQueryDto,

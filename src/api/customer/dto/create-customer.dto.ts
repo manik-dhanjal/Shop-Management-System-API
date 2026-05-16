@@ -25,6 +25,27 @@ const GSTIN_REGEX =
   /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
 const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
+export class ContactPersonDto {
+  @ApiProperty()
+  @IsString()
+  name: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  designation?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+}
+
 export class CreateCustomerDto {
   // -------- IDENTITY --------
   @ApiPropertyOptional({
@@ -95,6 +116,13 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsString()
   contactPersonDesignation?: string;
+
+  @ApiPropertyOptional({ type: [ContactPersonDto] })
+  @IsOptional()
+  @IsArray()
+  @Type(() => ContactPersonDto)
+  @ValidateNested({ each: true })
+  contactPersons?: ContactPersonDto[];
 
   @ApiPropertyOptional({
     description: 'Profile image ID',

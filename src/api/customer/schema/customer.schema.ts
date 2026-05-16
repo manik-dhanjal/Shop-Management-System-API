@@ -55,12 +55,35 @@ export class Customer {
   @Prop({ type: [String], default: [] })
   alternateEmails: string[];
 
-  /** For BUSINESS customers — purchase contact name */
+  /** For BUSINESS customers — primary purchase contact name */
   @Prop({ type: String, required: false })
   contactPersonName?: string;
 
   @Prop({ type: String, required: false })
   contactPersonDesignation?: string;
+
+  /**
+   * Additional contact persons (BUSINESS customers can have purchase, finance,
+   * logistics contacts etc.). The primary contact stays in
+   * `contactPersonName`/`contactPersonDesignation` for back-compat.
+   */
+  @Prop({
+    type: [
+      {
+        name: { type: String, required: true },
+        designation: { type: String },
+        phone: { type: String },
+        email: { type: String },
+      },
+    ],
+    default: [],
+  })
+  contactPersons: Array<{
+    name: string;
+    designation?: string;
+    phone?: string;
+    email?: string;
+  }>;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

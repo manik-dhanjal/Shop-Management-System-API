@@ -54,6 +54,11 @@ export class CustomerController {
     return { customerCode };
   }
 
+  @Get('stats')
+  async getCustomerStats(@Param('shopId') shopId: string) {
+    return this.customerService.getShopCustomerStats(shopId);
+  }
+
   @Get(':customerId')
   async getCustomerById(
     @Param('shopId') shopId: string,
