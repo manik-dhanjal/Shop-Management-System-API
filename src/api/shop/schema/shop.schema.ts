@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Location } from '@shared/schema/location.schema';
 import { GstDetails } from './gst-details.schema';
 import { ShopKind } from '../enum/shop-kind.enum';
+import { ShopStatus } from '../enum/shop-status.enum';
 import {
   SupplierLink,
   SupplierLinkSchema,
@@ -32,6 +33,34 @@ export class Shop {
     default: ShopKind.SELF_OPERATED,
   })
   kind: ShopKind;
+
+  @Prop({
+    type: String,
+    enum: ShopStatus,
+    default: ShopStatus.ACTIVE,
+  })
+  status: ShopStatus;
+
+  @Prop({ type: String, required: false })
+  description?: string;
+
+  /** Branding — optional logo, referenced from MediaMetadata. */
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'MediaMetadata',
+    required: false,
+  })
+  logo?: Types.ObjectId;
+
+  // -------- Preferences (per SELF_OPERATED shop) --------
+  @Prop({ type: String, default: 'INR' })
+  currency: string;
+
+  @Prop({ type: String, default: 'Asia/Kolkata' })
+  timezone: string;
+
+  @Prop({ type: String, required: false })
+  billingEmail?: string;
 
   @Prop({ type: Location })
   location: Location;

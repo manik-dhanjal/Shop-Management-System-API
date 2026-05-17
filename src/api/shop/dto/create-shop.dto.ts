@@ -4,6 +4,7 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -12,6 +13,7 @@ import {
 } from 'class-validator';
 import { GstDetailsDto } from './gst-details.dto';
 import { ShopKind } from '../enum/shop-kind.enum';
+import { ShopStatus } from '../enum/shop-status.enum';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ContactPersonDto {
@@ -39,6 +41,30 @@ export class CreateShopDto {
   @IsOptional()
   @IsEnum(ShopKind)
   kind?: ShopKind;
+
+  @IsOptional()
+  @IsEnum(ShopStatus)
+  status?: ShopStatus;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  logo?: string;
+
+  @IsOptional()
+  @IsString()
+  currency?: string;
+
+  @IsOptional()
+  @IsString()
+  timezone?: string;
+
+  @IsOptional()
+  @IsEmail()
+  billingEmail?: string;
 
   @IsOptional()
   @IsObject()
