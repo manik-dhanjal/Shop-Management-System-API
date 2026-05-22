@@ -8,6 +8,7 @@ import { CustomerModule } from './customer/customer.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { FormModule } from './form/form.module';
 import { SupplierModule } from './supplier/supplier.module';
+import { LocationModule } from './location/location.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SupplierModule } from './supplier/supplier.module';
     InventoryModule,
     FormModule,
     SupplierModule,
+    LocationModule,
   ],
   providers: [],
 })

@@ -23,29 +23,35 @@ export class GstDetailsDto {
   @IsString()
   tradeName?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  address: string;
+  address?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  state: string;
+  state?: string;
 
+  @IsOptional()
   @IsDateString()
   @IsNotEmpty()
-  registrationDate: string;
+  registrationDate?: string;
 
+  @IsOptional()
   @IsEnum(GstStatus)
   @IsNotEmpty()
-  status: GstStatus;
+  status?: GstStatus;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  username: string;
+  username?: string;
 
+  @IsOptional()
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email?: string;
 
   @IsString()
   @IsNotEmpty()

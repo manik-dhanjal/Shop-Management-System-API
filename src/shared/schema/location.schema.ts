@@ -1,4 +1,5 @@
 import { Prop, Schema } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Schema({
   _id: false,
@@ -50,4 +51,14 @@ export class Location {
     required: true,
   })
   pinCode: string;
+
+  // ObjectId refs to location collections — null when user typed an unknown place
+  @Prop({ type: Types.ObjectId, ref: 'Country', required: false })
+  countryRef?: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'State', required: false })
+  stateRef?: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'City', required: false })
+  cityRef?: Types.ObjectId;
 }
