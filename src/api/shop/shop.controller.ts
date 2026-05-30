@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
   Param,
   Patch,
   Post,
@@ -18,10 +21,18 @@ import { Roles } from '@shared/decorator/roles.decorator';
 import { UserRole } from '@api/user/enum/user-role.enum';
 import { CurrentUser } from '@shared/decorator/current-user.decorator';
 import { UserDocument } from '@api/user/schema/user.schema';
+import { toShopResponse } from './dto/shop-response.dto';
+import { GstVerificationService } from './gst-verification.service';
+import { OtpRequestDto, OtpVerifyDto } from './dto/gst-verify.dto';
 
 @Controller({ path: 'shop', version: '1' })
 export class ShopController {
-  constructor(private readonly service: ShopService) {}
+  private readonly logger = new Logger(ShopController.name);
+
+  constructor(
+    private readonly service: ShopService,
+    private readonly gstVerificationService: GstVerificationService,
+  ) {}
 
   // ---- My shops (caller's accessible shops) ----
 
@@ -44,8 +55,9 @@ export class ShopController {
   async createShop(
     @Body() newShop: CreateShopDto,
     @Request() req,
-  ): Promise<LeanDocument<ShopDocument>> {
-    return this.service.createShop(req.user, newShop);
+  ) {
+    const shop = await this.service.createShop(req.user, newShop);
+    return toShopResponse(shop);
   }
 
   @Roles(UserRole.EMPLOYEE, UserRole.ADMIN, UserRole.MANAGER)
@@ -54,7 +66,8 @@ export class ShopController {
     @Param('shopId') shopId: string,
     @CurrentUser() user: UserDocument,
   ) {
-    return this.service.getShopById(shopId, user);
+    const shop = await this.service.getShopById(shopId, user);
+    return toShopResponse(shop, shop.myRoles);
   }
 
   @Roles(UserRole.ADMIN)
@@ -62,8 +75,9 @@ export class ShopController {
   async updateShop(
     @Param('shopId') shopId: string,
     @Body() updatedShop: UpdateShopDto,
-  ): Promise<LeanDocument<ShopDocument>> {
-    return this.service.updateShop(shopId, updatedShop);
+  ) {
+    const shop = await this.service.updateShop(shopId, updatedShop);
+    return toShopResponse(shop);
   }
 
   @Roles(UserRole.ADMIN)
@@ -73,6 +87,40 @@ export class ShopController {
     @CurrentUser() user: UserDocument,
   ): Promise<void> {
     return this.service.deleteShop(shopId, user);
+  }
+
+  // ---- GST verification ----
+
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post(':shopId/gst/request-otp')
+  async requestGstOtp(
+    @Param('shopId') shopId: string,
+    @Body() body: OtpRequestDto,
+  ): Promise<void> {
+    this.logger.debug(`[GST] request-otp shopId=${shopId} gstin=${body.gstin}`);
+    return this.gstVerificationService.requestOtp(body.gstin);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Post(':shopId/gst/verify')
+  async verifyGstOtp(
+    @Param('shopId') shopId: string,
+    @Body() body: OtpVerifyDto,
+  ) {
+    this.logger.debug(
+      `[GST] verify shopId=${shopId} gstin=${body.gstin} email=${body.email ?? '(none)'}`,
+    );
+    const result = await this.gstVerificationService.verifyWithOtp(
+      shopId,
+      body.gstin,
+      body.otp,
+      body.email,
+    );
+    this.logger.debug(
+      `[GST] verify success shopId=${shopId} gstin=${body.gstin} legalName=${result.legalName} status=${result.status}`,
+    );
+    return result;
   }
 
   // ---- Members (team & roles) ----

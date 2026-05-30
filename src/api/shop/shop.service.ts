@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -61,6 +62,9 @@ export class ShopService {
     user: LeanDocument<UserDocument>,
     shop: CreateShopDto,
   ): Promise<LeanDocument<ShopDocument>> {
+    if (shop.gstDetails?.gstin) {
+      await this.assertGstinUnique(shop.gstDetails.gstin);
+    }
     const newShop = await this.repository.create(shop);
     await this.userService.updateUserWithQuery(user._id, {
       $push: {
@@ -80,8 +84,31 @@ export class ShopService {
     if (!isObjectIdOrHexString(shopId)) {
       throw new UnauthorizedException('Not a valid shopId');
     }
+
+    if (updatedShop.gstDetails?.gstin) {
+      await this.assertGstinUnique(updatedShop.gstDetails.gstin, shopId);
+    }
+
+    // Lock enforcement: after OTP verification, only username/email can change
+    const existing = await this.shopModel.findById(shopId).lean().exec();
+    if (existing?.gstDetails?.verifiedAt && updatedShop.gstDetails) {
+      const { username, email } = updatedShop.gstDetails;
+      updatedShop.gstDetails = { gstin: existing.gstDetails.gstin, username, email } as any;
+    }
+
     const targetId = new mongoose.Types.ObjectId(shopId);
     return this.repository.updateOne(targetId, omit(updatedShop, '_id'));
+  }
+
+  private async assertGstinUnique(gstin: string, excludeShopId?: string): Promise<void> {
+    const filter: any = { 'gstDetails.gstin': gstin };
+    if (excludeShopId) filter._id = { $ne: new mongoose.Types.ObjectId(excludeShopId) };
+    const conflict = await this.shopModel.findOne(filter).lean().exec();
+    if (conflict) {
+      throw new ConflictException(
+        `GSTIN ${gstin} is already registered to another shop.`,
+      );
+    }
   }
 
   // ---------------------------------------------------------------------------

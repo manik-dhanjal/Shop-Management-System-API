@@ -136,3 +136,5 @@ ShopSchema.index({ 'suppliers.supplierCode': 1 });
 ShopSchema.index({ kind: 1 });
 // Discovery: state-scoped + popular-in-state queries from the find-supplier picker.
 ShopSchema.index({ kind: 1, 'location.state': 1 });
+// One GSTIN per shop across the collection; sparse so shops without a GSTIN are unaffected.
+ShopSchema.index({ 'gstDetails.gstin': 1 }, { unique: true, sparse: true });

@@ -1,4 +1,5 @@
 import { Prop, Schema } from '@nestjs/mongoose';
+import { ConstitutionOfBusiness } from '../enum/constitution-of-business.enum';
 
 export enum GstStatus {
   ACTIVE = 'Active',
@@ -7,19 +8,21 @@ export enum GstStatus {
   CANCELLED = 'Cancelled',
 }
 
-@Schema({
-  timestamps: true,
-  _id: false,
-})
+@Schema({ _id: false })
 export class GstDetails {
-  @Prop({ type: String, required: true, unique: true })
+  // ── Required (always provided by admin) ─────────────────────────────────────
+  @Prop({ type: String, required: true })
   gstin: string;
 
-  @Prop({ type: String, required: true })
-  legalName: string;
+  // ── Portal-locked (populated + locked after OTP verify) ─────────────────────
+  @Prop({ type: String, required: false })
+  legalName?: string;
 
   @Prop({ type: String, required: false })
   tradeName?: string;
+
+  @Prop({ type: String, required: false })
+  panCardNumber?: string;
 
   @Prop({ type: String, required: false })
   address?: string;
@@ -33,12 +36,29 @@ export class GstDetails {
   @Prop({ type: String, enum: GstStatus, required: false })
   status?: GstStatus;
 
+  @Prop({ type: String, enum: ConstitutionOfBusiness, required: false })
+  constitutionOfBusiness?: ConstitutionOfBusiness;
+
+  @Prop({ type: Boolean, required: false })
+  einvoiceApplicable?: boolean;
+
+  @Prop({ type: [String], required: false })
+  natureOfBusiness?: string[];
+
+  @Prop({ type: Date, required: false })
+  verifiedAt?: Date;
+
+  // ── GST portal credentials (admin-managed) ───────────────────────────────────
   @Prop({ type: String, required: false })
   username?: string;
 
   @Prop({ type: String, required: false })
   email?: string;
 
-  @Prop({ type: String, required: true })
-  panCardNumber: string;
+  // ── Auth session (filing foundation — never sent to client) ─────────────────
+  @Prop({ type: String, required: false, select: false })
+  gstSessionToken?: string;
+
+  @Prop({ type: Date, required: false, select: false })
+  gstSessionExpiresAt?: Date;
 }
