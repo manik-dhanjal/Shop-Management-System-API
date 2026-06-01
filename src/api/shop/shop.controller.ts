@@ -3,17 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
-  Logger,
   Param,
   Patch,
   Post,
   Query,
   Request,
 } from '@nestjs/common';
-import { LeanDocument } from '@shared/types/lean-document.interface';
-import { ShopDocument } from './schema/shop.schema';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { ShopService } from './shop.service';
 import { UpdateShopDto } from './dto/update-shop.dto';
@@ -22,25 +17,15 @@ import { UserRole } from '@api/user/enum/user-role.enum';
 import { CurrentUser } from '@shared/decorator/current-user.decorator';
 import { UserDocument } from '@api/user/schema/user.schema';
 import { toShopResponse } from './dto/shop-response.dto';
-import { GstVerificationService } from './gst-verification.service';
-import { OtpRequestDto, OtpVerifyDto } from './dto/gst-verify.dto';
 
 @Controller({ path: 'shop', version: '1' })
 export class ShopController {
-  private readonly logger = new Logger(ShopController.name);
-
-  constructor(
-    private readonly service: ShopService,
-    private readonly gstVerificationService: GstVerificationService,
-  ) {}
+  constructor(private readonly service: ShopService) {}
 
   // ---- My shops (caller's accessible shops) ----
 
   @Get('mine')
-  async getMyShops(
-    @CurrentUser() user: UserDocument,
-    @Query('q') q?: string,
-  ) {
+  async getMyShops(@CurrentUser() user: UserDocument, @Query('q') q?: string) {
     return this.service.getMyShops(user, q);
   }
 
@@ -52,10 +37,7 @@ export class ShopController {
   // ---- Create / read / update / delete ----
 
   @Post()
-  async createShop(
-    @Body() newShop: CreateShopDto,
-    @Request() req,
-  ) {
+  async createShop(@Body() newShop: CreateShopDto, @Request() req) {
     const shop = await this.service.createShop(req.user, newShop);
     return toShopResponse(shop);
   }
@@ -87,40 +69,6 @@ export class ShopController {
     @CurrentUser() user: UserDocument,
   ): Promise<void> {
     return this.service.deleteShop(shopId, user);
-  }
-
-  // ---- GST verification ----
-
-  @Roles(UserRole.ADMIN)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Post(':shopId/gst/request-otp')
-  async requestGstOtp(
-    @Param('shopId') shopId: string,
-    @Body() body: OtpRequestDto,
-  ): Promise<void> {
-    this.logger.debug(`[GST] request-otp shopId=${shopId} gstin=${body.gstin}`);
-    return this.gstVerificationService.requestOtp(body.gstin);
-  }
-
-  @Roles(UserRole.ADMIN)
-  @Post(':shopId/gst/verify')
-  async verifyGstOtp(
-    @Param('shopId') shopId: string,
-    @Body() body: OtpVerifyDto,
-  ) {
-    this.logger.debug(
-      `[GST] verify shopId=${shopId} gstin=${body.gstin} email=${body.email ?? '(none)'}`,
-    );
-    const result = await this.gstVerificationService.verifyWithOtp(
-      shopId,
-      body.gstin,
-      body.otp,
-      body.email,
-    );
-    this.logger.debug(
-      `[GST] verify success shopId=${shopId} gstin=${body.gstin} legalName=${result.legalName} status=${result.status}`,
-    );
-    return result;
   }
 
   // ---- Members (team & roles) ----

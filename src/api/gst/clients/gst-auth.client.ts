@@ -1,39 +1,116 @@
-import { Injectable } from '@nestjs/common';
-import { BaseGstClient } from './base-gst.client';
+import { Inject, Injectable } from '@nestjs/common';
 import {
-  GstAuthRequest,
-  GstOtpRequest,
+  GstSendOtpRequest,
+  GstLogoutRequest,
   GstTokenRequest,
+  GstValidateOtpRequest,
+  GstSendEvcOtpRequest,
 } from '../interfaces/gst-request.interface';
+import { AxiosInstance, AxiosResponse } from 'axios';
+import { GST_API } from '../gst.constants';
+import { GstRequestFailedException } from '../exceptions/gst-request-failed.exception';
+import { GstResponse } from '../interfaces/gst.interface';
 
 @Injectable()
-export class GstAuthClient extends BaseGstClient {
-  async getOtp(request: GstAuthRequest): Promise<any> {
-    return this.post('/auth/otp', request);
+export class GstAuthClient {
+  constructor(
+    @Inject(GST_API)
+    private readonly gstApi: AxiosInstance,
+  ) {}
+
+  // send OTP to gst user with email and gst username
+  async sendOtp(
+    request: GstSendOtpRequest,
+  ): Promise<AxiosResponse<GstResponse>> {
+    const response = await this.gstApi.get('/authentication/otprequest', {
+      params: {
+        email: request.email,
+      },
+      headers: {
+        gst_username: request.gstUsername,
+        state_cd: request.stateCode,
+      },
+    });
+    this.handleError(response);
+    return response;
   }
 
-  async validateOtp(request: GstOtpRequest): Promise<any> {
-    return this.post('/auth/validate-otp', request);
+  // validate OTP and get auth token for gst user
+  async getAuthToken(
+    request: GstValidateOtpRequest,
+  ): Promise<AxiosResponse<GstResponse>> {
+    const response = await this.gstApi.get('/authentication/authtoken', {
+      params: { email: request.email, otp: request.otp },
+      headers: {
+        gst_username: request.gstUsername,
+        state_cd: request.stateCode,
+        txn: request.transactionId,
+      },
+    });
+    this.handleError(response);
+    return response;
   }
 
-  async getAuthToken(request: GstOtpRequest): Promise<any> {
-    return this.post('/auth/token', request);
+  // refresh auth token for gst user
+  async refreshToken(
+    request: GstTokenRequest,
+  ): Promise<AxiosResponse<GstResponse>> {
+    const response = await this.gstApi.get('/authentication/refreshtoken', {
+      params: { email: request.email },
+      headers: {
+        gst_username: request.gstUsername,
+        state_cd: request.stateCode,
+        txn: request.transactionId,
+      },
+    });
+    this.handleError(response);
+    return response;
   }
 
-  // Additional authentication methods
-  async refreshToken(request: GstTokenRequest): Promise<any> {
-    return this.post('/auth/refresh-token', request);
+  // logout gst user and invalidate auth token
+  async logout(request: GstLogoutRequest): Promise<AxiosResponse<GstResponse>> {
+    const response = await this.gstApi.get('/authentication/logout', {
+      params: { email: request.email },
+      headers: {
+        gst_username: request.gstUsername,
+        state_cd: request.stateCode,
+        txn: request.transactionId,
+      },
+    });
+    this.handleError(response);
+    return response;
   }
 
-  async logout(token: string): Promise<any> {
-    return this.post('/auth/logout', { token });
+  // send EVC OTP for GST user
+  async sendEvcOtp(
+    request: GstSendEvcOtpRequest,
+  ): Promise<AxiosResponse<GstResponse>> {
+    const response = await this.gstApi.get('/authentication/otpforevc', {
+      params: {
+        email: request.email,
+        gstin: request.gstin,
+        pan: request.pan,
+        form_type: request.formType,
+      },
+      headers: {
+        gst_username: request.gstUsername,
+        state_cd: request.stateCode,
+        txn: request.transactionId,
+      },
+    });
+    this.handleError(response);
+    return response;
   }
 
-  async validateToken(token: string): Promise<any> {
-    return this.post('/auth/validate-token', { token });
-  }
-
-  async getGstinDetails(gstin: string): Promise<any> {
-    return this.get(`/auth/gstin/${gstin}`);
+  // Common method to handle errors in GST API responses
+  // because GST API returns 200 status code even for failed requests
+  // and error details are present in response body
+  handleError(response: AxiosResponse<GstResponse>): void {
+    if (response.data.error || response.data.status_cd === '0') {
+      throw new GstRequestFailedException(
+        response.data.error?.message || response.data.status_desc,
+        response,
+      );
+    }
   }
 }

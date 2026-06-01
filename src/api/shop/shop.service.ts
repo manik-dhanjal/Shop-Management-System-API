@@ -89,20 +89,17 @@ export class ShopService {
       await this.assertGstinUnique(updatedShop.gstDetails.gstin, shopId);
     }
 
-    // Lock enforcement: after OTP verification, only username/email can change
-    const existing = await this.shopModel.findById(shopId).lean().exec();
-    if (existing?.gstDetails?.verifiedAt && updatedShop.gstDetails) {
-      const { username, email } = updatedShop.gstDetails;
-      updatedShop.gstDetails = { gstin: existing.gstDetails.gstin, username, email } as any;
-    }
-
     const targetId = new mongoose.Types.ObjectId(shopId);
     return this.repository.updateOne(targetId, omit(updatedShop, '_id'));
   }
 
-  private async assertGstinUnique(gstin: string, excludeShopId?: string): Promise<void> {
+  private async assertGstinUnique(
+    gstin: string,
+    excludeShopId?: string,
+  ): Promise<void> {
     const filter: any = { 'gstDetails.gstin': gstin };
-    if (excludeShopId) filter._id = { $ne: new mongoose.Types.ObjectId(excludeShopId) };
+    if (excludeShopId)
+      filter._id = { $ne: new mongoose.Types.ObjectId(excludeShopId) };
     const conflict = await this.shopModel.findOne(filter).lean().exec();
     if (conflict) {
       throw new ConflictException(
@@ -324,7 +321,10 @@ export class ShopService {
   // Soft-delete
   // ---------------------------------------------------------------------------
 
-  async deleteShop(shopId: string, user: LeanDocument<UserDocument>): Promise<void> {
+  async deleteShop(
+    shopId: string,
+    user: LeanDocument<UserDocument>,
+  ): Promise<void> {
     if (!isObjectIdOrHexString(shopId)) {
       throw new BadRequestException('Invalid Shop ID');
     }
@@ -384,7 +384,12 @@ export class ShopService {
 
   async inviteMember(
     shopId: string,
-    invite: { email: string; roles: UserRole[]; firstName?: string; lastName?: string },
+    invite: {
+      email: string;
+      roles: UserRole[];
+      firstName?: string;
+      lastName?: string;
+    },
   ): Promise<any> {
     if (!isObjectIdOrHexString(shopId)) {
       throw new BadRequestException('Invalid Shop ID');

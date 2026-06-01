@@ -18,48 +18,56 @@ export const gstConfig = registerAs(GST_CONFIG_NAME, (): GstConfig => {
     .required()
     .uri()
     .description('Base URL for GST API endpoints')
-    .validate(process.env.GST_BASE_URL).value;
+    .validate(process.env.GST_PROVIDER_BASE_URL).value;
 
+  console.log('GST_PROVIDER_CLIENT_ID:', process.env.GST_PROVIDER_CLIENT_ID); // Debug log for client ID
+  console.log(
+    'GST_PROVIDER_CLIENT_SECRET:',
+    process.env.GST_PROVIDER_CLIENT_SECRET,
+  ); // Debug log for client secret
+  console.log('GST_PROVIDER_IP_ADDRESS:', process.env.GST_PROVIDER_IP_ADDRESS); // Debug log for IP address
+  console.log('GST_PROVIDER_TIMEOUT:', process.env.GST_PROVIDER_TIMEOUT); // Debug log for timeout
+  console.log('GST_PROVIDER_BASE_URL:', process.env.GST_PROVIDER_BASE_URL); // Debug log for base URL
   const clientId = Joi.string()
     .required()
     .min(3)
     .max(50)
     .description('Client ID for GST API authentication')
-    .validate(process.env.GST_CLIENT_ID).value;
+    .validate(process.env.GST_PROVIDER_CLIENT_ID).value;
 
   const clientSecret = Joi.string()
     .required()
     .min(8)
     .max(100)
     .description('Client secret for GST API authentication')
-    .validate(process.env.GST_CLIENT_SECRET).value;
+    .validate(process.env.GST_PROVIDER_CLIENT_SECRET).value;
 
   const ipAddress = Joi.string()
     .ip()
     .required()
     .description('IP address for GST API requests')
-    .validate(process.env.GST_IP_ADDRESS).value;
+    .validate(process.env.GST_PROVIDER_IP_ADDRESS).value;
 
   const timeout = Joi.number()
     .default(30000)
     .min(1000)
     .max(120000)
     .description('Timeout in milliseconds for GST API requests')
-    .validate(process.env.GST_TIMEOUT).value;
+    .validate(process.env.GST_PROVIDER_TIMEOUT).value;
 
   const retryAttempts = Joi.number()
     .default(3)
     .min(1)
     .max(5)
     .description('Number of retry attempts for failed GST API requests')
-    .validate(process.env.GST_RETRY_ATTEMPTS).value;
+    .validate(process.env.GST_PROVIDER_RETRY_ATTEMPTS).value;
 
   const retryDelay = Joi.number()
     .default(1000)
     .min(100)
     .max(5000)
     .description('Delay in milliseconds between retry attempts')
-    .validate(process.env.GST_RETRY_DELAY).value;
+    .validate(process.env.GST_PROVIDER_RETRY_DELAY).value;
 
   return {
     baseUrl,
