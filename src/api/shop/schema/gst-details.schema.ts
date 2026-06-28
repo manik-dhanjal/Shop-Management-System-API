@@ -5,12 +5,21 @@ export class GstDetails {
   @Prop({ type: String, required: true })
   gstin: string;
 
-  @Prop({ type: String, required: false })
-  legalName?: string;
+  @Prop({ type: String, required: true })
+  legalName: string;
 
-  @Prop({ type: String, required: false })
-  panCardNumber?: string;
+  @Prop({ type: String, required: true })
+  username: string;
 
-  @Prop({ type: String, required: false })
-  state?: string;
+  @Prop({ type: String, required: true })
+  phone: string;
+
+  @Prop({ type: String, required: true })
+  email: string;
+
+  @Prop({ type: String, required: true })
+  panCardNumber: string;
+
+  @Prop({ type: String, required: true })
+  stateCode: string;
 }

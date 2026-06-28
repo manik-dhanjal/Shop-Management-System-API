@@ -9,6 +9,8 @@ export interface GSTRequestHeaders {
 export interface GSTErrorResponse {
   message: string; // Description of the error ex-> "user name exists"
   error_cd: string; // GST API error code Reference: https://developer.whitebooks.in/static/whitebooks/GST-API-Error-Codes.docx ex-> "AUTH4033"
+  code?: string; // Server side error code (envelope `error.code`)
+  desc?: string; // Server side error description (envelope `error.desc`)
 }
 
 // Common header response interfaces for GST API responses
@@ -22,10 +24,12 @@ export interface GSTHeaderResponse {
   txn?: string; // Added transactionId to the response headers upon successful requests ex-> "0c67ea4c495040cfa0831991d36f1ab7"
 }
 
-// Common response interface for GST API responses
-export interface GstResponse {
+// Common response interface for GST API responses.
+// `T` is the shape of the underlying GSTN form/result JSON carried in `data`.
+export interface GstResponse<T = unknown> {
   status_cd: string; // "1" for success, "0" for failure
   status_desc?: string; // Description of the status ex-> "user name exists"
+  data?: T; // GSTN form/result payload (object, or a base64 string for some calls)
   error?: GSTErrorResponse;
   header?: GSTHeaderResponse;
 }

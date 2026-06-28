@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class GstDetailsDto {
   @IsString()
@@ -6,19 +6,32 @@ export class GstDetailsDto {
   @Length(15, 15)
   gstin: string;
 
-  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  legalName?: string;
+  legalName: string;
 
-  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @Length(8, 15)
+  username: string;
+
   @IsString()
   @IsNotEmpty()
   @Length(10, 10)
-  panCardNumber?: string;
+  phone: string;
 
-  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  state?: string;
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(10, 10)
+  panCardNumber: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(2, 2)
+  state: string;
 }

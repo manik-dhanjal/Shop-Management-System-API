@@ -72,24 +72,6 @@ export class Shop {
   gstDetails?: GstDetails;
 
   // -------- Contact (used mostly when kind === EXTERNAL_SUPPLIER) --------
-  @Prop({ type: String, required: false })
-  phone?: string;
-
-  @Prop({ type: String, required: false })
-  email?: string;
-
-  @Prop({ type: [String], default: [] })
-  alternatePhones: string[];
-
-  @Prop({ type: [String], default: [] })
-  alternateEmails: string[];
-
-  @Prop({ type: String, required: false })
-  contactPersonName?: string;
-
-  @Prop({ type: String, required: false })
-  contactPersonDesignation?: string;
-
   @Prop({
     type: [
       {

@@ -8,15 +8,17 @@ import {
 } from '../interfaces/gst-request.interface';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { GST_API } from '../gst.constants';
-import { GstRequestFailedException } from '../exceptions/gst-request-failed.exception';
 import { GstResponse } from '../interfaces/gst.interface';
+import { GstBaseClient } from './gst-base.client';
 
+// Authentication archetype: establishes / refreshes / ends a taxpayer session.
+// See §4.1 of docs/gst-api-mapping.md. Envelope error handling is inherited from
+// GstBaseClient (GST returns HTTP 200 even for failures).
 @Injectable()
-export class GstAuthClient {
-  constructor(
-    @Inject(GST_API)
-    private readonly gstApi: AxiosInstance,
-  ) {}
+export class GstAuthClient extends GstBaseClient {
+  constructor(@Inject(GST_API) gstApi: AxiosInstance) {
+    super(gstApi);
+  }
 
   // send OTP to gst user with email and gst username
   async sendOtp(
@@ -100,17 +102,5 @@ export class GstAuthClient {
     });
     this.handleError(response);
     return response;
-  }
-
-  // Common method to handle errors in GST API responses
-  // because GST API returns 200 status code even for failed requests
-  // and error details are present in response body
-  handleError(response: AxiosResponse<GstResponse>): void {
-    if (response.data.error || response.data.status_cd === '0') {
-      throw new GstRequestFailedException(
-        response.data.error?.message || response.data.status_desc,
-        response,
-      );
-    }
   }
 }

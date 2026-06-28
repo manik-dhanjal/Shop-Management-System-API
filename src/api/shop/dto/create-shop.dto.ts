@@ -9,6 +9,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 import { GstDetailsDto } from './gst-details.dto';
@@ -78,37 +79,10 @@ export class CreateShopDto {
   gstDetails?: GstDetailsDto;
 
   // ---- Contact (optional; mostly used for EXTERNAL_SUPPLIER shops) ----
-  @IsOptional()
-  @IsString()
-  phone?: string;
-
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  alternatePhones?: string[];
-
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsEmail({}, { each: true })
-  alternateEmails?: string[];
-
-  @IsOptional()
-  @IsString()
-  contactPersonName?: string;
-
-  @IsOptional()
-  @IsString()
-  contactPersonDesignation?: string;
-
   @ApiPropertyOptional({ type: [ContactPersonDto] })
   @IsOptional()
   @IsArray()
+  @MinLength(1, { each: true })
   @Type(() => ContactPersonDto)
   @ValidateNested({ each: true })
   contactPersons?: ContactPersonDto[];

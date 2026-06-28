@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
 import { GstAuthClient } from './clients/gst-auth.client';
+import { GstPublicClient } from './clients/gst-public.client';
+import { GstReturnsClient } from './clients/gst-returns.client';
+import { GstLedgerClient } from './clients/gst-ledger.client';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance } from 'axios';
 import { GST_CONFIG_NAME, GstConfig } from '@config/gst.config';
@@ -64,8 +67,15 @@ export const HttpProviders = [
   // },
 ];
 
+const GstClients = [
+  GstAuthClient,
+  GstPublicClient,
+  GstReturnsClient,
+  GstLedgerClient,
+];
+
 @Module({
-  providers: [GstAuthClient, ...HttpProviders],
-  exports: [GstAuthClient, ...HttpProviders],
+  providers: [...GstClients, ...HttpProviders],
+  exports: [...GstClients, ...HttpProviders],
 })
 export class GstModule {}
